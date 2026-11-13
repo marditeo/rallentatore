@@ -1,0 +1,28 @@
+RALLENTATORE DA STUDIO - Rel21 (versione installabile, funziona anche senza rete)
+
+COSA CONTIENE QUESTA CARTELLA
+  index.html             la pagina del Rallentatore (e' la stessa della Rel20, con in piu' i collegamenti qui sotto)
+  manifest.webmanifest   dice al telefono/iPad nome e icona dell'app
+  sw.js                  "service worker": salva una copia dei file sul dispositivo per usarla senza rete
+  icon-192.png, icon-512.png, apple-touch-icon.png   le icone
+Tutti i file vanno messi insieme nella stessa cartella dello stesso sito. Non contengono dati personali.
+
+COME PUBBLICARLA (GitHub Pages, gratis)
+  1. Crea un account su github.com (serve un'e-mail).
+  2. Crea un archivio nuovo (New repository): nome a scelta, per esempio "rallentatore", impostalo PUBBLICO.
+  3. Add file > Upload files: carica i 6 file (non la cartella: i file) e premi Commit.
+  4. Settings > Pages: Source "Deploy from a branch", Branch "main", cartella "/ (root)", Save.
+  5. Dopo uno o due minuti l'indirizzo e':  https://IL-TUO-NOME.github.io/rallentatore/
+  Chiunque abbia l'indirizzo puo' aprirlo, anche senza account GitHub.
+
+COME INSTALLARLA SULL'iPAD
+  Apri l'indirizzo in Safari, aspetta che la pagina si carichi, poi Condividi > Aggiungi alla schermata Home.
+  Al primo caricamento serve la rete; dopo la pagina si apre anche senza connessione.
+
+AGGIORNARE
+  Se carichi una versione nuova di index.html, cambia anche il nome in sw.js (riga CACHE = "rallentatore-rel21"),
+  altrimenti i dispositivi tengono la copia vecchia.
+
+LIMITI
+  Provato qui con un server locale e con la rete spenta: la pagina si riapre. Non provato su un iPad vero.
+  I brani caricati nel Rallentatore restano nella memoria del browser/dell'app installata: se si cancellano i dati del sito, spariscono.
