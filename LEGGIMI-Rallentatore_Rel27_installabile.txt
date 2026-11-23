@@ -1,0 +1,37 @@
+RALLENTATORE DA STUDIO - Rel27 (versione installabile, funziona anche senza rete)
+
+NOVITA' DELLA Rel27
+  Campi dell'esercizio a sorpresa piu' piccoli, con + e - accanto; testi di spiegazione a scomparsa (tocca il titolo);
+  conto alla rovescia in battiti nell'ascolto (ascolto tra N / tocca a te tra N).
+
+DELLA Rel26
+  Ascolto             nell'esercizio a sorpresa, spuntando "Ascolta prima la combinazione": l'app suona la combinazione per una
+                      battuta intera (ASCOLTA, non suonare), poi alla battuta dopo tocca a te (SUONA). Nessun anticipo da
+                      scegliere; volume delle note a parte. Le note si dividono in parti uguali nella battuta, con il La
+                      del diapason come riferimento.
+  Diapason            ora e' il primo strumento, con volume, 415/432/440/442 accanto a -1 e +1, senza la frase in fondo.
+
+DELLA Rel25
+  Esercizio a sorpresa (pagina Strumenti, in fondo)
+                     il metronomo batte e le combinazioni escono a caso: la prossima compare negli ultimi battiti
+                     della battuta e alla battuta dopo la suoni. Scegli da dove prenderle (il tuo esercizio o la scelta
+                     delle permutazioni), quante ne escono, quante battute dura ciascuna, l'anticipo e il tempo (BPM).
+
+DELLA Rel24
+  Pagina principale  piu' corta: sotto i comandi resta solo l'allenamento a velocita' crescente.
+                     In alto trovi un pulsante per aprire gli Strumenti. In fondo c'e' la lista dei brani caricati prima.
+  Pagina Strumenti   (strumenti.html, si apre da "Metronomo", "Diapason" e "Permutazioni per violino")
+                     - metronomo e diapason, come nella Rel23 ma a parte;
+                     - permutazioni per violino: scegli dito di partenza (0-4 oppure 1-4), corda (Sol, Re, La, Mi) e dove
+                       mettere toni (T) e semitoni (ST). Vedi la prima permutazione con numeri delle dita e pentagramma,
+                       poi "Proponi le permutazioni" mostra tutte le altre;
+                     - esercizio: aggiungi una o piu' permutazioni (anche con corde e T/ST diversi), riordinale, salvale
+                       con un nome, riaprile, aggiungile in fondo a un altro esercizio, salva il pentagramma come immagine.
+  Tasti              T allenamento (pagina principale); M metronomo e D diapason (pagina Strumenti).
+
+COME AGGIORNARE SU GITHUB PAGES
+  Carica in cima al repository tutti i 7 file di questa cartella (index.html, strumenti.html, sw.js, manifest.webmanifest,
+  icon-192.png, icon-512.png, apple-touch-icon.png), sostituendo quelli vecchi. Riapri il Rallentatore due volte
+  per far scaricare la nuova versione ("Versione 27" sotto il titolo).
+
+I pentagrammi usano i disegni del font Bravura (SIL Open Font License 1.1).

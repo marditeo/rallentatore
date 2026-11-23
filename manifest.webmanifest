@@ -1,7 +1,7 @@
 {
   "name": "Rallentatore da studio",
   "short_name": "Rallentatore",
-  "description": "Rallenta un brano senza cambiare l'intonazione, cambia la tonalità, ripeti un tratto e taglia.",
+  "description": "Rallenta un brano senza cambiare l'intonazione, cambia la tonalità, ripeti un tratto e taglia; metronomo, allenamento e diapason.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

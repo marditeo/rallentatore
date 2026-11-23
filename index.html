@@ -218,6 +218,13 @@ details.keys summary { cursor: pointer; font-weight: 500; }
   .tin { width: 92px; }
   .btn.small { padding: 6px 10px; }
 }
+
+/* Rel27: allenamento e collegamenti agli strumenti */
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px 14px; }
+.grid2 .num { width: 100%; text-align: left; }
+.big.sm { font-size: 26px; }
+a.btn { text-decoration: none; }
+.btn[aria-pressed="true"] kbd { opacity: 0.8; }
 body { padding-bottom: env(safe-area-inset-bottom); }
 @media (prefers-reduced-motion: reduce) { .btn:active:not(:disabled) { transform: none; } }
 </style>
@@ -226,8 +233,7 @@ body { padding-bottom: env(safe-area-inset-bottom); }
   <header class="top">
     <div>
       <h1>Rallentatore da studio</h1>
-      <p>Rallenta un brano senza cambiarne l'intonazione, ripeti un passaggio e regola la tonalità.</p>
-      <p class="note" id="ver">Versione 21 · si installa sulla schermata Home e funziona anche senza rete; taglia un pezzo (Cut A–B, con annulla) e salva il file con velocità e tonalità</p>
+      <p class="note" id="ver">Versione 27 · in fondo alla pagina c'è la lista dei brani caricati prima</p>
     </div>
     <div class="filebox">
       <input id="file" type="file" multiple accept="audio/*,.opus,.ogg,.m4a,.mp3,.wav,.flac,.aac,.webm">
@@ -336,6 +342,40 @@ body { padding-bottom: env(safe-area-inset-bottom); }
     </div>
   </section>
 
+  <section class="deck toolsbar" aria-label="Strumenti">
+    <div class="col">
+      <h2>Strumenti</h2>
+      <div class="row">
+        <a class="btn" href="strumenti.html" target="_blank" rel="noopener">Metronomo</a>
+        <a class="btn" href="strumenti.html#diapason" target="_blank" rel="noopener">Diapason</a>
+        <a class="btn" href="strumenti.html#permutazioni" target="_blank" rel="noopener">Permutazioni per violino</a>
+        <a class="btn" href="strumenti.html#random" target="_blank" rel="noopener">Esercizio a sorpresa</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="deck" aria-label="Allenamento a velocità crescente">
+    <div class="cols">
+      <div class="col">
+        <h2>Allenamento: la velocità sale</h2>
+        <div class="big sm" id="tBig">–</div>
+        <p class="note" id="tSub"></p>
+        <div class="grid2">
+          <div class="field"><label for="tBpm">Tempo del brano (BPM)</label><input class="num" id="tBpm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="100" aria-label="Tempo del brano a velocità 100 per cento, in battiti al minuto"></div>
+          <div class="field"><label for="tBeats">Battiti in battuta</label><input class="num" id="tBeats" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="4" aria-label="Battiti in ogni battuta del brano, da 1 a 12"></div>
+          <div class="field"><label for="tStart">Parti da (%)</label><input class="num" id="tStart" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="60" aria-label="Velocità di partenza, da 25 a 200 per cento"></div>
+          <div class="field"><label for="tEnd">Fino a (%)</label><input class="num" id="tEnd" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="100" aria-label="Velocità finale, da 25 a 200 per cento"></div>
+          <div class="field"><label for="tStep">Sali di (%)</label><input class="num" id="tStep" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="5" aria-label="Quanto sale la velocità a ogni passo, in per cento"></div>
+          <div class="field"><label for="tBars">Ogni (battute)</label><input class="num" id="tBars" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="8" aria-label="Dopo quante battute la velocità sale"></div>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="tGo" type="button" aria-pressed="false">Avvia l'allenamento</button>
+          <kbd class="kbdonly">T</kbd>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="deck" aria-label="Taglia e salva">
     <div class="cols">
       <div class="col">
@@ -416,6 +456,7 @@ body { padding-bottom: env(safe-area-inset-bottom); }
       <li><kbd>↑</kbd> <kbd>↓</kbd> Tonalità ±1 semitono</li>
       <li><kbd>Home</kbd> Torna ad A (o all'inizio)</li>
       <li><kbd>N</kbd> <kbd>P</kbd> Brano successivo / precedente</li>
+      <li><kbd>T</kbd> Allenamento a velocità crescente: avvia o ferma</li>
     </ul>
   </details>
 </main>
@@ -1272,6 +1313,7 @@ class Engine {
     this.fadeIn = 0;
     this.FADE = Math.max(16, Math.round(sampleRate * 0.006));
     this.segs = [];            // ultimi tratti renderizzati, per mostrare il cursore
+    this.adv = 0;              // frame del brano percorsi in ascolto (i ritorni del loop contano): serve a contare le battute
     this.lead = 0;             // anticipo medio dell'algoritmo di time-stretch (frame)
     this.st.tempo = 1;
   }
@@ -1394,6 +1436,7 @@ class Engine {
       }
       this.segs.push({ t: t0 + off / sr, src: p, len: len, speed: this.speed });
       p += len * this.speed;
+      this.adv += len * this.speed;
       off += len;
       if (this.loop && p >= bEff) p = aEff + ((p - bEff) % (bEff - aEff));
     }
@@ -1608,6 +1651,7 @@ class Engine {
     peaks = buildPeaks(b);
     norm = peaks.peak > 0.001 ? Math.min(1 / peaks.peak, 12) : 1;
 
+    if (engine && typeof practiceCarry === 'function') practiceCarry(engine);
     engine = new Engine(b, b.sampleRate, BLOCK);
     node = ctx.createScriptProcessor(BLOCK, 2, 2);
     node.onaudioprocess = function (ev) {
@@ -1622,6 +1666,7 @@ class Engine {
         engine.stopping = false;
         setMsg('Si è verificato un errore durante la riproduzione. Premi Play per riprovare.');
       }
+      try { practiceTick(); } catch (err2) { /* il metronomo non deve mai fermare l'audio */ }
     };
     duck.gain.cancelScheduledValues(0);
     duck.gain.value = 1;
@@ -1644,6 +1689,7 @@ class Engine {
     undoSt = [];
     redoSt = [];
     clearExport();
+    if (typeof practiceStop === 'function') practiceStop();
     useBuffer(b);
     syncLoop();
 
@@ -1730,6 +1776,7 @@ class Engine {
         if (!bgDest) { bgDest = ctx.createMediaStreamDestination(); el.srcObject = bgDest.stream; }
         gain.disconnect();
         gain.connect(bgDest);
+        practiceReroute(bgDest);
         const p = el.play();
         if (p && p.catch) p.catch(function () { if (fromClick) setMsg('Il browser non permette l\'audio in sottofondo: ho rimesso quello normale.'); setBg(false); $('bgMode').checked = false; });
         if ('mediaSession' in navigator) {
@@ -1742,12 +1789,13 @@ class Engine {
       } else {
         gain.disconnect();
         gain.connect(ctx.destination);
+        practiceReroute(null);
         try { el.pause(); } catch (e) { /* ignora */ }
       }
       try { localStorage.setItem('rds-bg', on ? '1' : '0'); } catch (e) { /* ignora */ }
       return true;
     } catch (e) {
-      try { gain.disconnect(); gain.connect(ctx.destination); } catch (e2) { /* ignora */ }
+      try { gain.disconnect(); gain.connect(ctx.destination); practiceReroute(null); } catch (e2) { /* ignora */ }
       $('bgMode').checked = false;
       setMsg('Non riesco ad attivare l\'audio in sottofondo su questo browser.');
       return false;
@@ -2424,6 +2472,7 @@ class Engine {
     const tot = S.semis + S.cents / 100;
     $('ptOut').innerHTML = (tot > 0 ? '+' : '') + String(Math.round(tot * 100) / 100).replace('.', ',') + '<small>semitoni</small>';
     updateCutLabels();
+    practiceUI();
   }
 
   function setText(el, text) { if (el.textContent !== text) el.textContent = text; }
@@ -2786,10 +2835,173 @@ class Engine {
       else if (lk === 'c') setCutA(curTime(), false);
       else if (lk === 'v') setCutB(curTime(), false);
       else if (lk === 'l') toggleLoop();
+      else if (lk === 't') toggleTrainer();
       else if (lk === 'n') stepTrack(1);
       else if (lk === 'p') stepTrack(-1);
     }
   });
+
+  /* ---------- allenamento: la velocità sale ogni N battute ---------- */
+  /* Il metronomo e il diapason sono nella pagina «Strumenti». Qui resta solo l'allenamento, che lavora sul brano:
+     conta le battute dal tempo del brano (tBpm, tBeats), contando i frame percorsi dal motore audio (engine.adv),
+     anche con la pagina in secondo piano. */
+
+  const P = { tBpm: 100, tBeats: 4, tStart: 60, tEnd: 100, tStep: 5, tBars: 8 };
+  (function loadP() {
+    let o = {};
+    try { o = JSON.parse(localStorage.getItem('rds-allen') || localStorage.getItem('rds-pratica') || '{}') || {}; } catch (e) { o = {}; }
+    const n = function (v, lo, hi, def) { v = +v; return isFinite(v) && v >= lo && v <= hi ? v : def; };
+    P.tBpm = n(o.tBpm, 20, 300, n(o.bpm, 20, 300, P.tBpm));
+    P.tBeats = Math.round(n(o.tBeats, 1, 12, n(o.beats, 1, 12, P.tBeats)));
+    P.tStart = Math.round(n(o.tStart, 25, 200, P.tStart));
+    P.tEnd = Math.round(n(o.tEnd, 25, 200, P.tEnd));
+    P.tStep = Math.round(n(o.tStep, 1, 100, P.tStep));
+    P.tBars = Math.round(n(o.tBars, 1, 99, P.tBars));
+  })();
+  function saveP() { try { localStorage.setItem('rds-allen', JSON.stringify(P)); } catch (e) { /* ignora */ } }
+
+  function practiceReroute() { /* niente da ricollegare: qui non ci sono altri suoni */ }
+
+  const T = { on: false, carry: 0, stepFrom: 0, stepNo: 1, total: 1, reached: false };
+
+  function barFrames() { return engine.sr * (60 / P.tBpm) * P.tBeats; }   // battuta del brano a velocità 100%
+  function barsFloat() { return (engine.adv + T.carry) / barFrames(); }
+
+  function rebase(fn) {
+    // cambiando tempo o battiti del brano, il conteggio delle battute resta dov'era
+    const d = T.on && engine ? barsFloat() : 0;
+    fn();
+    if (T.on && engine) T.carry = d * barFrames() - engine.adv;
+  }
+  function setTBpm(v) {
+    rebase(function () { P.tBpm = clamp(Math.round(v * 10) / 10, 20, 300); });
+    saveP();
+    practiceUI();
+  }
+  function setTBeats(v) {
+    rebase(function () { P.tBeats = clamp(Math.round(v), 1, 12); });
+    saveP();
+    practiceUI();
+  }
+
+  function trainerRange() {
+    const s = clamp(Math.round(P.tStart), 25, 200);
+    const e = clamp(Math.round(P.tEnd), 25, 200);
+    return { s: s, e: e, step: Math.max(1, Math.round(P.tStep)), bars: Math.max(1, Math.round(P.tBars)) };
+  }
+
+  function practiceCarry(old) { if (T.on) T.carry += old.adv; }
+
+  function stopTrainer() {
+    if (!T.on) return;
+    T.on = false;
+    practiceUI();
+  }
+  function practiceStop() { stopTrainer(); }
+
+  function startTrainer() {
+    if (!engine) return;
+    const r = trainerRange();
+    if (r.e < r.s) {
+      setMsg('La velocità finale deve essere almeno quella di partenza.');
+      flagBad($('tStart'));
+      flagBad($('tEnd'));
+      return;
+    }
+    setMsg('');
+    T.on = true;
+    T.carry = -engine.adv;
+    T.stepFrom = 0;
+    T.stepNo = 1;
+    T.total = Math.ceil((r.e - r.s) / r.step) + 1;
+    T.reached = r.s >= r.e;
+    setSpeed(r.s);
+    if (validRegion()) seekTo(S.a);
+    if (!uiPlaying()) play();
+    practiceUI();
+  }
+  function toggleTrainer() { if (T.on) stopTrainer(); else startTrainer(); }
+
+  function trainerTick() {
+    if (!T.on || !engine || !engine.playing) return;
+    const r = trainerRange();
+    if (!T.reached && barsFloat() - T.stepFrom >= r.bars) {
+      T.stepFrom += r.bars;
+      if (S.speed < r.e) {
+        setSpeed(Math.min(r.e, S.speed + r.step));
+        T.stepNo++;
+      }
+      if (S.speed >= r.e) T.reached = true;
+    }
+    practiceUI();
+  }
+
+  function practiceTick() { trainerTick(); }
+
+  function num1(x) { return String(Math.round(x * 100) / 100).replace('.', ','); }
+  function setHtml(el, html) { if (el.getAttribute('data-h') !== html) { el.innerHTML = html; el.setAttribute('data-h', html); } }
+
+  function practiceUI() {
+    const r = trainerRange();
+    showField($('tBpm'), num1(P.tBpm));
+    showField($('tBeats'), String(P.tBeats));
+    showField($('tStart'), String(P.tStart));
+    showField($('tEnd'), String(P.tEnd));
+    showField($('tStep'), String(P.tStep));
+    showField($('tBars'), String(P.tBars));
+    setText($('tGo'), T.on ? 'Ferma l\'allenamento' : 'Avvia l\'allenamento');
+    $('tGo').setAttribute('aria-pressed', T.on ? 'true' : 'false');
+    let big;
+    let sub;
+    if (!T.on) {
+      big = '–';
+      sub = r.e < r.s
+        ? 'La velocità finale deve essere almeno quella di partenza.'
+        : 'Parte dal ' + r.s + '% e sale di ' + r.step + '% ogni ' + r.bars + (r.bars === 1 ? ' battuta' : ' battute') + ', fino al ' + r.e + '%.';
+    } else if (T.reached) {
+      big = S.speed + '%<small>velocità finale</small>';
+      sub = 'Raggiunta: resta a questa velocità finché non fermi l\'allenamento.';
+    } else if (engine) {
+      const rem = Math.max(1, r.bars - Math.floor(barsFloat() - T.stepFrom + 1e-9));
+      big = rem + '<small>' + (rem === 1 ? 'battuta rimasta' : 'battute rimaste') + '</small>';
+      sub = (uiPlaying() ? '' : 'In pausa · ') + 'Ora ' + S.speed + '%, poi ' + Math.min(r.e, S.speed + r.step) + '% · livello ' + T.stepNo + ' di ' + T.total + '.';
+    }
+    if (big != null) {
+      setHtml($('tBig'), big);
+      setText($('tSub'), sub);
+    }
+  }
+
+  function trainerField(id, key, lo, hi) {
+    bindField(id, function (v) {
+      const x = parseNum(v);
+      if (!isFinite(x)) return false;
+      P[key] = clamp(Math.round(x), lo, hi);
+      saveP();
+      practiceUI();
+      return true;
+    });
+  }
+  trainerField('tStart', 'tStart', 25, 200);
+  trainerField('tEnd', 'tEnd', 25, 200);
+  trainerField('tStep', 'tStep', 1, 100);
+  trainerField('tBars', 'tBars', 1, 99);
+  bindField('tBpm', function (v) {
+    const x = parseNum(v);
+    if (!isFinite(x)) return false;
+    setTBpm(x);
+    return true;
+  });
+  bindField('tBeats', function (v) {
+    const x = parseNum(v);
+    if (!isFinite(x)) return false;
+    setTBeats(x);
+    return true;
+  });
+  $('tGo').addEventListener('click', toggleTrainer);
+  practiceUI();
+
+
 
   /* ---------- playlist: brani in studio, salvati nel browser ---------- */
 
@@ -3206,7 +3418,7 @@ class Engine {
 </script>
 
 <script>
-/* Rel21: registra il service worker, così la pagina resta disponibile senza rete dopo la prima apertura. */
+/* Rel27: registra il service worker, così le pagine restano disponibili senza rete dopo la prima apertura. */
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
 }
