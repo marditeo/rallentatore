@@ -1,6 +1,8 @@
 RALLENTATORE DA STUDIO - Rel29 (versione installabile, funziona anche senza rete)
 
 NOVITA' DELLA Rel29
+  Dal Rallentatore, i pulsanti degli strumenti aprono UNA scheda (se e' gia' aperta la riusano, non ne aprono altre) e il brano
+  non si ferma; "← Rallentatore" chiude la scheda degli strumenti. Nell'app installata l'apertura avviene nella stessa finestra.
   Spiegazioni a scomparsa con il pulsante (i); Esercizio a sorpresa: se non usi l'ascolto, durante il conto alla rovescia
   il riquadro mostra gia' la combinazione che sta per arrivare.
 

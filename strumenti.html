@@ -321,7 +321,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
 <p class="note helptext" id="help1" hidden>Metronomo, diapason, permutazioni per violino ed esercizio a sorpresa.</p>
     </div>
     <div class="backbar">
-      <a class="btn" href="index.html">← Rallentatore</a>
+      <a class="btn" id="back" href="index.html">← Rallentatore</a>
     </div>
   </header>
 
@@ -1633,6 +1633,19 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
   });
   rField('rN', 'n', 1, 99); rField('rBars', 'bars', 1, 16); rField('rLead', 'lead', 1, 8);
   bindField('rBpm', function (v) { const x = parseNum(v); if (!isFinite(x)) return false; setBpm(x); return true; });
+
+  /* «← Rallentatore»: chiude questa scheda e ti lascia sul Rallentatore (che non si è mai fermato).
+     Se il browser non permette di chiuderla, torna alla pagina da cui arrivi, o apre il Rallentatore. */
+  $('back').addEventListener('click', function (e) {
+    e.preventDefault();
+    const href = $('back').getAttribute('href');
+    try { if (window.opener && !window.opener.closed) window.opener.focus(); } catch (x) { /* ignora */ }
+    try { window.close(); } catch (x) { /* ignora */ }
+    setTimeout(function () {
+      if (window.closed) return;
+      if (history.length > 1) history.back(); else location.href = href;
+    }, 200);
+  });
 
   /* pulsanti «i»: aprono e chiudono la spiegazione accanto */
   document.addEventListener('click', function (e) {
