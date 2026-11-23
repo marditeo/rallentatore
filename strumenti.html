@@ -219,7 +219,7 @@ details.keys summary { cursor: pointer; font-weight: 500; }
   .btn.small { padding: 6px 10px; }
 }
 
-/* Rel27: allenamento e collegamenti agli strumenti */
+/* Rel29: allenamento e collegamenti agli strumenti */
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px 14px; }
 .grid2 .num { width: 100%; text-align: left; }
 .big.sm { font-size: 26px; }
@@ -292,7 +292,7 @@ details.help > summary::-webkit-details-marker { display: none; }
 details.help > summary::after { content: "▾"; font-size: 11px; color: var(--muted); }
 details.help[open] > summary::after { content: "▴"; }
 details.help > p { margin: 6px 0 0; }
-summary.hsum { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.hsum { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 summary.note { margin: 2px 0 0; }
 summary.rowlbl { font-weight: 600; color: var(--ink); }
 .stepper { display: inline-flex; align-items: center; gap: 4px; }
@@ -302,14 +302,23 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
 .check { font-size: 13px; }
 .rbanner { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 4px 16px; }
 .rbanner .rcount { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rsingle { display: block; }
+@keyframes rflash { 0% { border-color: var(--amber); box-shadow: 0 0 0 6px color-mix(in srgb, var(--amber) 55%, transparent); } 100% { border-color: var(--line); box-shadow: 0 0 0 0 transparent; } }
+.pbox.flash { animation: rflash 0.5s ease-out; border-width: 2px; }
+@media (prefers-reduced-motion: reduce) { .pbox.flash { animation-duration: 0.01s; } }
+.hrow { display: inline-flex; align-items: center; gap: 8px; }
+.info { width: 22px; height: 22px; min-width: 22px; padding: 0; border-radius: 50%; border: 1.5px solid var(--muted); background: transparent; color: var(--muted); font: italic 700 13px/1 Georgia, 'Times New Roman', serif; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.info[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--panel); }
+.info:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.helptext { margin: 6px 0 0; }
 
 </style>
 <main class="app">
   <header class="top">
     <div>
       <h1>Strumenti per lo studio</h1>
-      <details class="help"><summary class="note" id="ver">Versione 27</summary>
-        <p class="note">Metronomo, diapason, permutazioni per violino ed esercizio a sorpresa.</p></details>
+      <span class="hrow"><span class="note" id="ver">Versione 29</span><button class="info" type="button" aria-expanded="false" aria-controls="help1" aria-label="Informazioni: Versione 29">i</button></span>
+<p class="note helptext" id="help1" hidden>Metronomo, diapason, permutazioni per violino ed esercizio a sorpresa.</p>
     </div>
     <div class="backbar">
       <a class="btn" href="index.html">← Rallentatore</a>
@@ -396,8 +405,8 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
 
   <section class="deck" id="permutazioni" aria-label="Permutazioni per violino">
     <div class="sect">
-      <details class="help"><summary class="hsum">Permutazioni per violino</summary>
-        <p class="note">Scegli da quale dito partire, su quale corda e dove stanno i toni (T) e i semitoni (ST) tra un dito e l'altro. Qui sotto vedi la prima permutazione con il numero del dito e il pentagramma; poi chiedi tutte le altre.</p></details>
+      <span class="hrow"><span class="hsum">Permutazioni per violino</span><button class="info" type="button" aria-expanded="false" aria-controls="help2" aria-label="Informazioni: Permutazioni per violino">i</button></span>
+<p class="note helptext" id="help2" hidden>Scegli da quale dito partire, su quale corda e dove stanno i toni (T) e i semitoni (ST) tra un dito e l'altro. Qui sotto vedi la prima permutazione con il numero del dito e il pentagramma; poi chiedi tutte le altre.</p>
 
       <div class="pmgrid">
         <div class="stack">
@@ -431,8 +440,8 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
 
         <div class="stack">
           <div class="pmrow" id="pmPat" role="group" aria-label="Toni e semitoni tra un dito e il successivo">
-            <details class="help"><summary class="rowlbl">Toni (T) e semitoni (ST): tocca per cambiare</summary>
-              <p class="note">Il numero tra due pulsanti è il dito; il pulsante è la distanza tra un dito e il successivo.</p></details>
+            <span class="hrow"><span class="rowlbl">Toni (T) e semitoni (ST)</span><button class="info" type="button" aria-expanded="false" aria-controls="help3" aria-label="Informazioni: Toni (T) e semitoni (ST)">i</button></span>
+<p class="note helptext" id="help3" hidden>Il numero tra due pulsanti è il dito; il pulsante è la distanza tra un dito e il successivo.</p>
             <div class="patrow">
               <span class="note">0</span><button class="btn small tbtn" type="button" data-i="0" aria-pressed="false">T</button>
               <span class="note">1</span><button class="btn small tbtn" type="button" data-i="1" aria-pressed="false">T</button>
@@ -499,8 +508,8 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
 
   <section class="deck" id="random" aria-label="Esercizio a sorpresa">
     <div class="sect">
-      <details class="help"><summary class="hsum">Esercizio a sorpresa</summary>
-        <p class="note">Il metronomo batte e le combinazioni escono a caso: la prossima compare un attimo prima che la battuta finisca, e alla battuta dopo la suoni. Con «Ascolta prima la combinazione» l'app la suona per una battuta intera e poi tocca a te. Con 5 note in una battuta scegli 5/4 nel metronomo: una nota per battito.</p></details>
+      <span class="hrow"><span class="hsum">Esercizio a sorpresa</span><button class="info" type="button" aria-expanded="false" aria-controls="help4" aria-label="Informazioni: Esercizio a sorpresa">i</button></span>
+<p class="note helptext" id="help4" hidden>Il metronomo batte e le combinazioni escono a caso. Negli ultimi battiti prima del cambio compare il conto alla rovescia, il bordo del riquadro lampeggia e (se non usi l'ascolto) il riquadro mostra già la combinazione che sta per arrivare. Con «Ascolta prima la combinazione» l'app la suona per una battuta intera e poi tocca a te. Con 5 note in una battuta scegli 5/4 nel metronomo: una nota per battito.</p>
 
       <label class="check"><input type="checkbox" id="rListen"> Ascolta prima la combinazione (la suona l'app)</label>
       <div class="pmgrid">
@@ -515,10 +524,9 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
           </div>
           <div class="grid2" id="rSteps">
             <div class="field"><label for="rN">Combinazioni</label><div class="stepper"><button class="btn small" type="button" data-r="n" data-d="-1" aria-label="Meno: Quante combinazioni, da 1 a 99">−</button><input class="num" id="rN" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="8" aria-label="Quante combinazioni, da 1 a 99"><button class="btn small" type="button" data-r="n" data-d="1" aria-label="Più: Quante combinazioni, da 1 a 99">+</button></div></div>
-            <div class="field"><label for="rBars">Battute ciascuna</label><div class="stepper"><button class="btn small" type="button" data-r="bars" data-d="-1" aria-label="Meno: Battute per combinazione, da 1 a 16">−</button><input class="num" id="rBars" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1" aria-label="Battute per combinazione, da 1 a 16"><button class="btn small" type="button" data-r="bars" data-d="1" aria-label="Più: Battute per combinazione, da 1 a 16">+</button></div></div>
-            <div class="field"><label for="rLead">Anticipo (battiti)</label><div class="stepper"><button class="btn small" type="button" data-r="lead" data-d="-1" aria-label="Meno: Anticipo in battiti, da 1 a 6">−</button><input class="num" id="rLead" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1" aria-label="Anticipo in battiti, da 1 a 6"><button class="btn small" type="button" data-r="lead" data-d="1" aria-label="Più: Anticipo in battiti, da 1 a 6">+</button></div></div>
+            <div class="field"><label for="rBars">Battute ciascuna</label><div class="stepper"><button class="btn small" type="button" data-r="bars" data-d="-1" aria-label="Meno: Battute per combinazione, da 1 a 16">−</button><input class="num" id="rBars" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="4" aria-label="Battute per combinazione, da 1 a 16"><button class="btn small" type="button" data-r="bars" data-d="1" aria-label="Più: Battute per combinazione, da 1 a 16">+</button></div></div>
+            <div class="field"><label for="rLead">Conto alla rovescia (battiti)</label><div class="stepper"><button class="btn small" type="button" data-r="lead" data-d="-1" aria-label="Meno: Battiti del conto alla rovescia, da 1 a 8">−</button><input class="num" id="rLead" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="4" aria-label="Battiti del conto alla rovescia, da 1 a 8"><button class="btn small" type="button" data-r="lead" data-d="1" aria-label="Più: Battiti del conto alla rovescia, da 1 a 8">+</button></div></div>
           </div>
-          <p class="note" id="rLeadInfo"></p>
         </div>
 
         <div class="stack">
@@ -541,16 +549,11 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
       </div>
 
       <div class="rbanner" id="rBanner" role="status" hidden><span id="rBanMsg"></span><span class="rcount" id="rBanCount"></span></div>
-      <div class="rpair">
+      <div class="rsingle">
         <div class="pbox" id="rNowBox">
-          <h3>Da suonare ora: <span class="seq" id="rNowSeq">–</span></h3>
+          <h3><span id="rNowLbl">Da suonare ora</span>: <span class="seq" id="rNowSeq">–</span></h3>
           <div class="rstaff" id="rNow"></div>
           <p class="note" id="rNowInfo"></p>
-        </div>
-        <div class="pbox" id="rNextBox">
-          <h3>In arrivo: <span class="seq" id="rNextSeq">–</span></h3>
-          <div class="rstaff" id="rNext"></div>
-          <p class="note" id="rNextInfo"></p>
         </div>
       </div>
     </div>
@@ -1129,7 +1132,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
 
     const list = permsOf(PM.mode, PM.start);
     const sp = spell(PM.str, PM.pat);
-    $('pmNotes').textContent = 'Le note sulla corda di ' + STR[PM.str].name + ': ' + (PM.mode === 4 ? [1, 2, 3, 4] : [0, 1, 2, 3, 4]).map(function (f) { return f + ' = ' + sp[f].name; }).join(' · ') + '.';
+    $('pmNotes').textContent = 'Note sulla corda di ' + STR[PM.str].name + ': ' + (PM.mode === 4 ? [1, 2, 3, 4] : [0, 1, 2, 3, 4]).map(function (f) { return f + ' = ' + sp[f].name; }).join(' · ') + '.';
 
     // la prima permutazione, grande
     $('pmFirstSeq').textContent = list[0].join('-');
@@ -1239,7 +1242,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
       cv.toBlob(function (b) {
         if (!b) { setMsg('Non sono riuscito a preparare l\'immagine.'); return; }
         const base = title.replace(/[\\/:*?"<>|\s\u0000-\u001f]+/g, '_').trim().slice(0, 60) || 'Esercizio';
-        deliver(b, 'Permutazioni_' + base + '_Rel27.png');
+        deliver(b, 'Permutazioni_' + base + '_Rel29.png');
       }, 'image/png');
     };
     img.onerror = function () { URL.revokeObjectURL(blobUrl); setMsg('Non sono riuscito a preparare l\'immagine.'); };
@@ -1251,15 +1254,15 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
   /* Il metronomo batte; a ogni battuta il programma sa a che clic siamo. Poco prima che la battuta finisca
      (negli ultimi battiti) mostra la combinazione che arriva, scelta a caso; alla battuta dopo diventa quella da suonare. */
 
-  const R = Object.assign({ n: 8, bars: 1, lead: 1, src: 'ex', listen: false, vol: 70 }, load('rds-random', {}) || {});
+  const R = Object.assign({ n: 8, bars: 4, lead: 4, src: 'ex', listen: false, vol: 70 }, load('rds-random2', {}) || {});
   (function cleanR() {
     const c = function (v, lo, hi, d) { v = Math.round(+v); return v >= lo && v <= hi ? v : d; };
-    R.n = c(R.n, 1, 99, 8); R.bars = c(R.bars, 1, 16, 1); R.lead = c(R.lead, 1, 6, 1);
+    R.n = c(R.n, 1, 99, 8); R.bars = c(R.bars, 1, 16, 4); R.lead = c(R.lead, 1, 8, 4);
     R.src = R.src === 'sel' ? 'sel' : 'ex';
     R.listen = R.listen === true;
     R.vol = c(R.vol, 0, 100, 70);
   })();
-  function saveR() { store('rds-random', R); }
+  function saveR() { store('rds-random2', R); }
 
 
   /* le note dell'esercizio: un suono semplice ad arco (due onde a dente di sega leggermente scordate, filtrate) */
@@ -1321,7 +1324,6 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     }
     return out.slice(0, n);
   }
-  function leadBeats() { return Math.min(R.lead, Math.max(1, sg().n / sg().sub - 1)); }
 
   function rPanel(id, it, key, title) {
     const el = $(id);
@@ -1331,72 +1333,74 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
   }
   function rRender() {
     const total = RS.seq ? RS.seq.length : 0;
-    const cur = RS.on && RS.cur >= 0 ? RS.seq[RS.cur] : null;
-    const nxt = RS.on && RS.next >= 0 ? RS.seq[RS.next] : null;
-    rPanel('rNow', cur, cur ? RS.cur + itemKey(cur) : 'x', 'Da suonare');
-    rPanel('rNext', nxt, nxt ? RS.next + itemKey(nxt) : 'x', 'In arrivo');
+    const pv = RS.on && !RS.listen && RS.pv >= 0;     // senza ascolto, durante il conto alla rovescia si vede già la prossima
+    const idx = pv ? RS.pv : RS.cur;
+    const cur = RS.on && idx >= 0 ? RS.seq[idx] : null;
+    rPanel('rNow', cur, cur ? idx + itemKey(cur) : 'x', pv ? 'Prossima' : 'Da suonare');
+    setText($('rNowLbl'), pv ? 'Prossima' : 'Da suonare ora');
     setText($('rNowSeq'), cur ? cur.f.join('-') : '–');
-    setText($('rNowInfo'), cur ? 'combinazione ' + (RS.cur + 1) + ' di ' + total + ' · ' + STR[cur.s].name + ' · ' + patText(cur.p) + (R.bars > 1 ? ' · battuta ' + Math.min(RS.barsIn, R.bars) + ' di ' + R.bars : '') : (RS.on ? 'tra poco comincia' : ''));
-    setText($('rNextSeq'), nxt ? nxt.f.join('-') : (RS.on && RS.endPend ? 'fine' : '–'));
-    setText($('rNextInfo'), nxt ? STR[nxt.s].name + ' · ' + patText(nxt.p) + (RS.listen ? ' · la stai ascoltando: alla prossima battuta tocca a te' : ' · parte alla prossima battuta') : (RS.on && RS.endPend ? 'questa è l\'ultima battuta' : (RS.on ? 'compare negli ultimi battiti della battuta' : '')));
-    $('rNextBox').classList.toggle('hot', !!nxt);
+    setText($('rNowInfo'), cur ? (pv ? 'tra poco parte questa · ' : '') + 'combinazione ' + (idx + 1) + ' di ' + total + ' · ' + STR[cur.s].name + ' · ' + patText(cur.p) + (!pv && R.bars > 1 ? ' · battuta ' + Math.min(RS.barsIn, R.bars) + ' di ' + R.bars : '') : (RS.on ? 'tra poco comincia' : ''));
     const ban = $('rBanner');
-    const ph = RS.on && RS.listen ? RS.phase : '';
+    const ph = RS.on ? RS.phase : '';
     ban.hidden = !ph;
     ban.className = 'rbanner' + (ph === 'listen' ? ' listen' : ph === 'play' ? ' play' : '');
-    setText($('rBanMsg'), ph === 'listen' ? 'ASCOLTA · non suonare' : ph === 'play' ? 'SUONA · ripeti quello che hai sentito' : ph === 'ready' ? 'PRONTI · alla prossima battuta ascolti la prima combinazione' : '');
+    setText($('rBanMsg'), ph === 'listen' ? 'ASCOLTA · non suonare' : ph === 'play' ? (RS.listen ? 'SUONA · ripeti quello che hai sentito' : 'SUONA') : ph === 'ready' ? (RS.listen ? 'PRONTI · alla prossima battuta ascolti la prima combinazione' : 'PRONTI · alla prossima battuta parte la prima combinazione') : '');
     $('rNowBox').classList.toggle('dim', ph === 'listen');
     if (!ph) setText($('rBanCount'), '');
   }
 
-  /* conto alla rovescia in battiti: quanto manca all'ascolto successivo (o alla tua parte, se stai ascoltando) */
+  function flashBox() {
+    const b = $('rNowBox');
+    b.classList.remove('flash');
+    void b.offsetWidth;
+    b.classList.add('flash');
+  }
+
+  /* Che battuta è: 0 = attesa; poi, per ogni combinazione, [una battuta di ascolto] + R.bars battute da suonare */
+  function planOf(b) {
+    const N = RS.seq.length, B = R.bars;
+    if (b === 0) return { phase: 'ready' };
+    const C = (RS.listen ? 1 : 0) + B;
+    const j = b - 1;
+    if (j >= N * C) return { phase: 'end' };
+    const k = Math.floor(j / C), q = j % C;
+    if (RS.listen && q === 0) return { phase: 'listen', k: k };
+    return { phase: 'play', k: k, r: q - (RS.listen ? 1 : 0) + 1 };
+  }
+
+  /* conto alla rovescia in battiti, solo negli ultimi battiti prima del cambio; a ogni battito il bordo lampeggia */
   function rCountdown(i) {
-    if (!RS.on || !RS.listen || RS.bar < 0) return;
+    if (!RS.on || RS.bar < 0 || !RS.p) return;
     const bpb = sg().n / sg().sub;
-    const left = bpb - Math.floor(i / sg().sub);          // battiti che restano in questa battuta
-    const C = 1 + R.bars, N = RS.seq.length, b = RS.bar;
-    let t = '';
-    if (b === 0) t = 'ascolto tra ' + left;
-    else if (b - 1 < N * C) {
-      const k = Math.floor((b - 1) / C), r = (b - 1) % C;
-      if (r === 0) t = 'tocca a te tra ' + left;
-      else t = (k + 1 < N ? 'ascolto tra ' : 'fine tra ') + ((C - 1 - r) * bpb + left);
-    }
-    setText($('rBanCount'), t);
+    const left = bpb - Math.floor(i / sg().sub);
+    const w = Math.min(R.lead, bpb);
+    const p = RS.p;
+    const N = RS.seq.length;
+    let label = '';
+    if (p.phase === 'ready') label = RS.listen ? 'ascolto tra' : 'si parte tra';
+    else if (p.phase === 'listen') label = 'tocca a te tra';
+    else if (p.phase === 'play' && p.r === R.bars) label = RS.listen && p.k + 1 < N ? 'ascolto tra' : (p.k + 1 < N ? 'cambio tra' : 'fine tra');
+    const on = label && left <= w;
+    setText($('rBanCount'), on ? label + ' ' + left : '');
+    const nxt = on && !RS.listen ? (p.phase === 'ready' ? 0 : (p.k + 1 < N ? p.k + 1 : -1)) : -1;
+    if (nxt !== RS.pv) { RS.pv = nxt; rRender(); }
+    if (on) flashBox();
   }
 
   function exBeat(i) {
     if (!RS.on) return;
-    if (RS.listen) {
-      if (i % sg().sub === 0) rCountdown(i);
-      if (i !== 0) return;
-      RS.bar++;
-      const b = RS.bar, C = 1 + R.bars, N = RS.seq.length;
-      if (b === 0) { RS.phase = 'ready'; }
-      else if (b - 1 >= N * C) { rStop(true); return; }
-      else {
-        const k = Math.floor((b - 1) / C), r = (b - 1) % C;
-        if (r === 0) { RS.phase = 'listen'; RS.next = k; }
-        else { RS.phase = 'play'; RS.cur = k; RS.next = -1; RS.barsIn = r; }
-      }
-      rRender();
-      rCountdown(0);
-      return;
-    }
-    const n = sg().n;
-    const L = n - leadBeats() * sg().sub;
     if (i === 0) {
-      if (RS.first) { RS.first = false; setText($('rStatus'), 'Pronti: la prima combinazione compare alla fine di questa battuta.'); }
-      else if (RS.endPend) { rStop(true); return; }
-      else if (RS.next >= 0) { RS.cur = RS.next; RS.next = -1; RS.barsIn = 1; }
-      else if (RS.cur >= 0) RS.barsIn++;
-      if (RS.cur >= 0) setText($('rStatus'), 'In corso: ' + (RS.cur + 1) + ' di ' + RS.seq.length + '.');
+      RS.bar++;
+      const p = planOf(RS.bar);
+      if (p.phase === 'end') { rStop(true); return; }
+      RS.p = p;
+      RS.pv = -1;
+      RS.phase = p.phase;
+      if (p.phase === 'play') { RS.cur = p.k; RS.barsIn = p.r; if (p.r === 1) setText($('rStatus'), 'In corso: ' + (p.k + 1) + ' di ' + RS.seq.length + '.'); }
+      else if (p.phase === 'listen') setText($('rStatus'), 'Ascolta la combinazione ' + (p.k + 1) + ' di ' + RS.seq.length + '.');
+      rRender();
     }
-    if (i === L) {
-      if (RS.cur < 0 && RS.next < 0) RS.next = 0;
-      else if (RS.next < 0 && RS.barsIn >= R.bars) { if (RS.cur + 1 < RS.seq.length) RS.next = RS.cur + 1; else RS.endPend = true; }
-    }
-    rRender();
+    if (i % sg().sub === 0) rCountdown(i);
   }
 
   /* piano dell'ascolto: battuta 0 = attesa; poi per ogni combinazione una battuta in cui l'app la suona e R.bars battute in cui la suoni tu */
@@ -1411,10 +1415,10 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     if (!AC || RS.on) return;
     metroStop();
     RS.seq = buildSeq(R.n);
-    RS.cur = -1; RS.next = -1; RS.barsIn = 0; RS.first = true; RS.endPend = false;
+    RS.cur = -1; RS.next = -1; RS.barsIn = 0; RS.p = null; RS.pv = -1;
     RS.sbar = 0; RS.bar = -1; RS.phase = ''; RS.listen = R.listen;
     RS.on = true;
-    $('rNow').rk = null; $('rNext').rk = null;
+    $('rNow').rk = null;
     setText($('rStatus'), 'Parte il metronomo: ascolta la prima battuta.');
     rRender();
     metroStart();
@@ -1445,13 +1449,8 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
       + (R.n > pool ? ' · ne chiedi più di ' + pool + ': usciranno più volte' : '') + '.');
     setText($('rTempo'), P.sig + (sg().sub > 1 ? ' (battiti da tre clic)' : '') + ' · il tempo in battuta si cambia nel metronomo in alto');
     $('rListen').checked = R.listen;
-    $('rLead').disabled = R.listen;
-    [].forEach.call($('rSteps').querySelectorAll('button[data-r="lead"]'), function (b) { b.disabled = R.listen; });
     $('rVolBox').hidden = !R.listen;
     if (document.activeElement !== $('rVol')) $('rVol').value = String(R.vol);
-    const lb = leadBeats();
-    if (R.listen) setText($('rLeadInfo'), 'Con l\'ascolto la combinazione si sente per tutta la battuta prima di quella in cui la suoni: l\'anticipo non serve.');
-    else setText($('rLeadInfo'), 'La combinazione compare ' + (lb === 1 ? 'nell\'ultimo battito' : 'negli ultimi ' + lb + ' battiti') + ' della battuta.');
   }
 
   /* =====================  scritte e collegamenti  ===================== */
@@ -1628,12 +1627,22 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     const t = e.target && e.target.closest ? e.target.closest('button[data-r]') : null;
     if (!t || t.disabled) return;
     const key = t.getAttribute('data-r');
-    const lim = { n: [1, 99], bars: [1, 16], lead: [1, 6] }[key];
+    const lim = { n: [1, 99], bars: [1, 16], lead: [1, 8] }[key];
     R[key] = clamp(R[key] + (+t.getAttribute('data-d')), lim[0], lim[1]);
     saveR(); ui();
   });
-  rField('rN', 'n', 1, 99); rField('rBars', 'bars', 1, 16); rField('rLead', 'lead', 1, 6);
+  rField('rN', 'n', 1, 99); rField('rBars', 'bars', 1, 16); rField('rLead', 'lead', 1, 8);
   bindField('rBpm', function (v) { const x = parseNum(v); if (!isFinite(x)) return false; setBpm(x); return true; });
+
+  /* pulsanti «i»: aprono e chiudono la spiegazione accanto */
+  document.addEventListener('click', function (e) {
+    const b = e.target && e.target.closest ? e.target.closest('button.info') : null;
+    if (!b) return;
+    const t = $(b.getAttribute('aria-controls'));
+    if (!t) return;
+    t.hidden = !t.hidden;
+    b.setAttribute('aria-expanded', t.hidden ? 'false' : 'true');
+  });
 
   /* tasti: M metronomo, D diapason */
   document.addEventListener('keydown', function (e) {
@@ -1657,7 +1666,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
 </script>
 
 <script>
-/* Rel27: registra il service worker, così le pagine restano disponibili senza rete dopo la prima apertura. */
+/* Rel29: registra il service worker, così le pagine restano disponibili senza rete dopo la prima apertura. */
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
 }

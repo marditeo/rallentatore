@@ -219,7 +219,7 @@ details.keys summary { cursor: pointer; font-weight: 500; }
   .btn.small { padding: 6px 10px; }
 }
 
-/* Rel27: allenamento e collegamenti agli strumenti */
+/* Rel29: allenamento e collegamenti agli strumenti */
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px 14px; }
 .grid2 .num { width: 100%; text-align: left; }
 .big.sm { font-size: 26px; }
@@ -233,7 +233,7 @@ body { padding-bottom: env(safe-area-inset-bottom); }
   <header class="top">
     <div>
       <h1>Rallentatore da studio</h1>
-      <p class="note" id="ver">Versione 27 · in fondo alla pagina c'è la lista dei brani caricati prima</p>
+      <p class="note" id="ver">Versione 29 · in fondo alla pagina c'è la lista dei brani caricati prima</p>
     </div>
     <div class="filebox">
       <input id="file" type="file" multiple accept="audio/*,.opus,.ogg,.m4a,.mp3,.wav,.flac,.aac,.webm">
@@ -244,6 +244,18 @@ body { padding-bottom: env(safe-area-inset-bottom); }
       <span class="fname" id="fname"></span>
     </div>
   </header>
+
+  <section class="deck toolsbar" aria-label="Strumenti per lo studio">
+    <div class="col">
+      <h2>Strumenti per lo studio</h2>
+      <div class="row">
+        <a class="btn" href="strumenti.html" target="_blank" rel="noopener">Metronomo</a>
+        <a class="btn" href="strumenti.html#diapason" target="_blank" rel="noopener">Diapason</a>
+        <a class="btn" href="strumenti.html#permutazioni" target="_blank" rel="noopener">Permutazioni per violino</a>
+        <a class="btn" href="strumenti.html#random" target="_blank" rel="noopener">Esercizio a sorpresa</a>
+      </div>
+    </div>
+  </section>
 
   <section class="stage" id="stage" aria-label="Forma d'onda">
     <div class="stage-head">
@@ -338,18 +350,6 @@ body { padding-bottom: env(safe-area-inset-bottom); }
         </div>
         <div class="row"><button class="btn small" id="ptReset" type="button">Azzera tonalità</button></div>
         <p class="note kbdonly">Tasti <kbd>↑</kbd> e <kbd>↓</kbd> per salire o scendere di un semitono.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="deck toolsbar" aria-label="Strumenti">
-    <div class="col">
-      <h2>Strumenti</h2>
-      <div class="row">
-        <a class="btn" href="strumenti.html" target="_blank" rel="noopener">Metronomo</a>
-        <a class="btn" href="strumenti.html#diapason" target="_blank" rel="noopener">Diapason</a>
-        <a class="btn" href="strumenti.html#permutazioni" target="_blank" rel="noopener">Permutazioni per violino</a>
-        <a class="btn" href="strumenti.html#random" target="_blank" rel="noopener">Esercizio a sorpresa</a>
       </div>
     </div>
   </section>
@@ -3418,7 +3418,7 @@ class Engine {
 </script>
 
 <script>
-/* Rel27: registra il service worker, così le pagine restano disponibili senza rete dopo la prima apertura. */
+/* Rel29: registra il service worker, così le pagine restano disponibili senza rete dopo la prima apertura. */
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
 }
