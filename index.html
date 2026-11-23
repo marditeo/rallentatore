@@ -289,7 +289,7 @@ body { padding-bottom: env(safe-area-inset-bottom); }
       <button class="btn" id="bToA" type="button">Vai ad A</button>
       <span class="spacer"></span>
       <div class="vol"><label for="vol">Volume</label><input id="vol" type="range" min="0" max="100" step="1" value="90"></div>
-      <label class="check bgbox" id="bgBox" hidden title="Prova: fa uscire il suono da un elemento audio, che su iPad può continuare con altre app aperte"><input type="checkbox" id="bgMode"> Audio in sottofondo (prova)</label>
+      <label class="check bgbox" id="bgBox" hidden title="Fa uscire il suono da un elemento audio: su iPad può continuare con altre app aperte o con lo schermo bloccato"><input type="checkbox" id="bgMode"> Audio in background</label>
       <audio id="bgAudio" playsinline hidden></audio>
     </div>
 
@@ -1765,7 +1765,7 @@ class Engine {
     scheduleSave();
   }
 
-  /* ---------- prova: audio in sottofondo (iPad) ---------- */
+  /* ---------- audio in background (iPad) ---------- */
   let bgDest = null;
   function bgSupported() { return !!(ctx && ctx.createMediaStreamDestination && window.MediaStream && $('bgAudio')); }
   function setBg(on, fromClick) {
@@ -1778,7 +1778,7 @@ class Engine {
         gain.connect(bgDest);
         practiceReroute(bgDest);
         const p = el.play();
-        if (p && p.catch) p.catch(function () { if (fromClick) setMsg('Il browser non permette l\'audio in sottofondo: ho rimesso quello normale.'); setBg(false); $('bgMode').checked = false; });
+        if (p && p.catch) p.catch(function () { if (fromClick) setMsg('Il browser non permette l\'audio in background: ho rimesso quello normale.'); setBg(false); $('bgMode').checked = false; });
         if ('mediaSession' in navigator) {
           try {
             navigator.mediaSession.metadata = new MediaMetadata({ title: $('fname').textContent || 'Rallentatore da studio', artist: 'Rallentatore da studio' });
@@ -1797,7 +1797,7 @@ class Engine {
     } catch (e) {
       try { gain.disconnect(); gain.connect(ctx.destination); practiceReroute(null); } catch (e2) { /* ignora */ }
       $('bgMode').checked = false;
-      setMsg('Non riesco ad attivare l\'audio in sottofondo su questo browser.');
+      setMsg('Non riesco ad attivare l\'audio in background su questo browser.');
       return false;
     }
   }
