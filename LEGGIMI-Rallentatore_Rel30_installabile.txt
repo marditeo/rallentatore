@@ -1,6 +1,7 @@
 RALLENTATORE DA STUDIO - Rel30 (versione installabile, funziona anche senza rete)
 
 NOVITA' DELLA Rel30
+- Pianoforte dell'esercizio a sorpresa: ora usa campioni di pianoforte veri (soundfont FluidR3_GM di Frank Wen, licenza Creative Commons Attribution 3.0; estratti dal progetto midi-js-soundfonts di Benjamin Gleitzman).
   Dal Rallentatore, i pulsanti degli strumenti aprono UNA scheda (se e' gia' aperta la riusano, non ne aprono altre) e il brano
   non si ferma; "← Rallentatore" chiude la scheda degli strumenti. Nell'app installata l'apertura avviene nella stessa finestra.
   Spiegazioni a scomparsa con il pulsante (i); Esercizio a sorpresa: se non usi l'ascolto, durante il conto alla rovescia
