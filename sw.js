@@ -1,5 +1,5 @@
-/* Rallentatore Rel29 - service worker (revisione 5): tiene una copia della pagina per usarla senza rete. */
-var CACHE = "rallentatore-rel29";
+/* Rallentatore Rel30 - service worker (revisione 1): tiene una copia della pagina per usarla senza rete. */
+var CACHE = "rallentatore-rel30";
 var FILES = ["./", "index.html", "strumenti.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));

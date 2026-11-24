@@ -219,12 +219,23 @@ details.keys summary { cursor: pointer; font-weight: 500; }
   .btn.small { padding: 6px 10px; }
 }
 
-/* Rel29: allenamento e collegamenti agli strumenti */
+/* Rel30: allenamento compatto */
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px 14px; }
 .grid2 .num { width: 100%; text-align: left; }
 .big.sm { font-size: 26px; }
 a.btn { text-decoration: none; }
 .btn[aria-pressed="true"] kbd { opacity: 0.8; }
+.trhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 32px; }
+.trhead .big { font-size: 38px; }
+.trhead .big small { font-size: 15px; }
+.trhead .big small.pre { margin: 0 8px 0 0; }
+.trfields { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 14px; }
+.tf { display: flex; flex-direction: column; gap: 3px; }
+.tf label { font-size: 12px; color: var(--muted); white-space: nowrap; line-height: 1.1; }
+.tf .num { width: 64px; height: 38px; text-align: center; font-size: 18px; padding: 0 4px; }
+.tfrow { display: flex; gap: 6px; align-items: center; }
+.tf select { height: 38px; font: inherit; font-size: 15px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 0 6px; }
+.tf .seg { display: flex; gap: 4px; }
 body { padding-bottom: env(safe-area-inset-bottom); }
 @media (prefers-reduced-motion: reduce) { .btn:active:not(:disabled) { transform: none; } }
 
@@ -311,17 +322,25 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
 .info[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--panel); }
 .info:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 .helptext { margin: 6px 0 0; }
+#pmPre { flex-wrap: nowrap; overflow-x: auto; gap: 5px; }
+#pmPre .btn { padding: 5px 8px; font-size: 12px; white-space: nowrap; flex: 0 0 auto; }
+.rampbox { display: flex; flex-direction: column; gap: 10px; }
+.rtempo { font: 600 15px var(--font-num); color: var(--muted); margin-left: 8px; }
+.tf .stepper .num { width: 52px; }
+#rInst { display: flex; flex-wrap: wrap; gap: 6px; }
 
 </style>
 <main class="app">
   <header class="top">
     <div>
       <h1>Strumenti per lo studio</h1>
-      <span class="hrow"><span class="note" id="ver">Versione 29</span><button class="info" type="button" aria-expanded="false" aria-controls="help1" aria-label="Informazioni: Versione 29">i</button></span>
+      <span class="hrow"><span class="note" id="ver">Versione 30</span><button class="info" type="button" aria-expanded="false" aria-controls="help1" aria-label="Informazioni: Versione 30">i</button></span>
 <p class="note helptext" id="help1" hidden>Metronomo, diapason, permutazioni per violino ed esercizio a sorpresa.</p>
     </div>
     <div class="backbar">
       <a class="btn" id="back" href="index.html">← Rallentatore</a>
+      <label class="check" id="bgBox" hidden title="Il suono esce da un elemento audio: su iPad e telefono può continuare con altre app aperte o con lo schermo bloccato"><input type="checkbox" id="bgMode"> Audio in background</label>
+      <audio id="bgAudio" playsinline hidden></audio>
     </div>
   </header>
 
@@ -540,6 +559,13 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
           </div>
           <p class="note" id="rTempo"></p>
           <div class="field" id="rVolBox">
+            <span class="rowlbl">Strumento che suona la combinazione</span>
+            <div class="seg" id="rInst" role="group" aria-label="Strumento">
+              <button class="btn small" type="button" data-inst="piano" aria-pressed="true">Pianoforte</button>
+              <button class="btn small" type="button" data-inst="violin" aria-pressed="false">Violino</button>
+              <button class="btn small" type="button" data-inst="flute" aria-pressed="false">Flauto</button>
+              <button class="btn small" type="button" data-inst="organ" aria-pressed="false">Organo</button>
+            </div>
             <label for="rVol">Volume delle note suonate</label>
             <input id="rVol" type="range" min="0" max="100" step="1" value="70">
           </div>
@@ -548,10 +574,24 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
         </div>
       </div>
 
+      <div class="rampbox">
+        <label class="check"><input type="checkbox" id="rRamp"> <span id="rRampLbl">Velocità crescente</span></label>
+        <div id="rRampBox" hidden>
+          <div class="trfields">
+            <div class="tf"><label for="rFrom">Da (BPM)</label><div class="stepper"><button class="btn small" type="button" data-r="rFrom" data-d="-1" aria-label="Meno: Tempo di partenza, da 20 a 300">−</button><input class="num" id="rFrom" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="60" aria-label="Tempo di partenza, da 20 a 300"><button class="btn small" type="button" data-r="rFrom" data-d="1" aria-label="Più: Tempo di partenza, da 20 a 300">+</button></div></div>
+            <div class="tf"><label for="rTo">A (BPM)</label><div class="stepper"><button class="btn small" type="button" data-r="rTo" data-d="-1" aria-label="Meno: Tempo finale, da 20 a 300">−</button><input class="num" id="rTo" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="100" aria-label="Tempo finale, da 20 a 300"><button class="btn small" type="button" data-r="rTo" data-d="1" aria-label="Più: Tempo finale, da 20 a 300">+</button></div></div>
+            <div class="tf"><label for="rStep">Passo (BPM)</label><div class="stepper"><button class="btn small" type="button" data-r="rStep" data-d="-1" aria-label="Meno: Di quanto cambia il tempo a ogni passo, da 1 a 50">−</button><input class="num" id="rStep" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="5" aria-label="Di quanto cambia il tempo a ogni passo, da 1 a 50"><button class="btn small" type="button" data-r="rStep" data-d="1" aria-label="Più: Di quanto cambia il tempo a ogni passo, da 1 a 50">+</button></div></div>
+            <div class="tf"><label for="rEvery">Ogni</label><div class="tfrow"><div class="stepper"><button class="btn small" type="button" data-r="rEvery" data-d="-1" aria-label="Meno: ogni quanto cambia il tempo">−</button><input class="num" id="rEvery" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="2" aria-label="Ogni quanto cambia il tempo"><button class="btn small" type="button" data-r="rEvery" data-d="1" aria-label="Più: ogni quanto cambia il tempo">+</button></div><select id="rUnit" aria-label="Unità: battute, secondi o combinazioni"><option value="bars">battute</option><option value="sec">secondi</option><option value="comb">combinazioni</option></select></div></div>
+            <div class="tf"><label id="rDirLbl">Direzione</label><div class="seg" id="rDir" role="group" aria-labelledby="rDirLbl"><button class="btn small" type="button" data-dir="up" aria-pressed="true">Sali</button><button class="btn small" type="button" data-dir="down" aria-pressed="false">Scendi</button></div></div>
+          </div>
+          <p class="note">Il tempo del metronomo cambia all'inizio di una battuta. Alla fine ritorna quello che avevi impostato.</p>
+        </div>
+      </div>
+
       <div class="rbanner" id="rBanner" role="status" hidden><span id="rBanMsg"></span><span class="rcount" id="rBanCount"></span></div>
       <div class="rsingle">
         <div class="pbox" id="rNowBox">
-          <h3><span id="rNowLbl">Da suonare ora</span>: <span class="seq" id="rNowSeq">–</span></h3>
+          <h3><span id="rNowLbl">Da suonare ora</span>: <span class="seq" id="rNowSeq">–</span> <span class="rtempo" id="rTempoNow"></span></h3>
           <div class="rstaff" id="rNow"></div>
           <p class="note" id="rNowInfo"></p>
         </div>
@@ -611,8 +651,41 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
       mgain = ctx.createGain();
       mgain.connect(pdest);
       applyMVol();
+      if (P.bg) setBg(true, false);
     }
     return ctx;
+  }
+  /* audio in background: il suono esce da un elemento audio, che su iPad e telefono può continuare con altre app aperte o con lo schermo bloccato */
+  let bgDest = null;
+  function bgOK() { return !!(AC && AC.prototype.createMediaStreamDestination && window.MediaStream && $('bgAudio')); }
+  function setBg(on, fromClick) {
+    if (!bgOK() || !ctx) return false;
+    const el = $('bgAudio');
+    try {
+      if (on) {
+        if (!bgDest) { bgDest = ctx.createMediaStreamDestination(); el.srcObject = bgDest.stream; }
+        pdest.disconnect();
+        pdest.connect(bgDest);
+        const p = el.play();
+        if (p && p.catch) p.catch(function () {
+          if (fromClick) setMsg('Il browser non permette l\'audio in background: ho rimesso quello normale.');
+          P.bg = false; saveP(); setBg(false); ui();
+        });
+        if ('mediaSession' in navigator) {
+          try { navigator.mediaSession.metadata = new MediaMetadata({ title: 'Strumenti per lo studio', artist: 'Rallentatore da studio' }); } catch (e) { /* ignora */ }
+        }
+      } else {
+        pdest.disconnect();
+        pdest.connect(ctx.destination);
+        try { el.pause(); } catch (e) { /* ignora */ }
+      }
+      return true;
+    } catch (e) {
+      try { pdest.disconnect(); pdest.connect(ctx.destination); } catch (e2) { /* ignora */ }
+      P.bg = false; saveP();
+      setMsg('Non riesco ad attivare l\'audio in background su questo browser.');
+      return false;
+    }
   }
   if (!AC) { setMsg('Questo browser non supporta l\'audio necessario per metronomo e diapason. Le permutazioni funzionano lo stesso.'); }
 
@@ -628,7 +701,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
   };
   const SIG_BY_BEATS = { 2: '2/4', 3: '3/4', 4: '4/4', 5: '5/4', 7: '7/4' };
 
-  const P = { bpm: 100, sig: '4/4', accs: [0], blink: true, mvol: 70, fhz: 440, fvol: 40 };
+  const P = { bpm: 100, sig: '4/4', accs: [0], blink: true, mvol: 70, fhz: 440, fvol: 40, bg: false };
   (function loadP() {
     const o = load('rds-metro', null) || load('rds-pratica', {}) || {};
     const n = function (v, lo, hi, def) { v = +v; return isFinite(v) && v >= lo && v <= hi ? v : def; };
@@ -645,6 +718,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     P.mvol = n(o.mvol, 0, 100, P.mvol);
     P.fhz = n(o.fhz, 100, 2000, P.fhz);
     P.fvol = n(o.fvol, 0, 100, P.fvol);
+    P.bg = o.bg === true;
   })();
   function saveP() { store('rds-metro', P); }
   function sg() { return SIGS[P.sig]; }
@@ -700,7 +774,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     if (M.next < now - 0.15) M.next = now + 0.03;   // il dispositivo si era fermato: si riparte da adesso
     while (M.next < now + AHEAD) {
       if (M.beat >= sg().n) M.beat = 0;
-      if (M.beat === 0 && RS.on && RS.listen) rSchedule(M.next);
+      if (M.beat === 0 && RS.on) rSchedule(M.next);
       clickAt(M.next, isAcc(M.beat));
       M.q.push({ t: M.next, beat: M.beat });
       if (M.q.length > 64) M.q.shift();
@@ -1242,7 +1316,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
       cv.toBlob(function (b) {
         if (!b) { setMsg('Non sono riuscito a preparare l\'immagine.'); return; }
         const base = title.replace(/[\\/:*?"<>|\s\u0000-\u001f]+/g, '_').trim().slice(0, 60) || 'Esercizio';
-        deliver(b, 'Permutazioni_' + base + '_Rel29.png');
+        deliver(b, 'Permutazioni_' + base + '_Rel30.png');
       }, 'image/png');
     };
     img.onerror = function () { URL.revokeObjectURL(blobUrl); setMsg('Non sono riuscito a preparare l\'immagine.'); };
@@ -1254,41 +1328,139 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
   /* Il metronomo batte; a ogni battuta il programma sa a che clic siamo. Poco prima che la battuta finisca
      (negli ultimi battiti) mostra la combinazione che arriva, scelta a caso; alla battuta dopo diventa quella da suonare. */
 
-  const R = Object.assign({ n: 8, bars: 4, lead: 4, src: 'ex', listen: false, vol: 70 }, load('rds-random2', {}) || {});
+  const INST = { piano: 'Pianoforte', violin: 'Violino', flute: 'Flauto', organ: 'Organo' };
+  const R = Object.assign({ n: 8, bars: 4, lead: 4, src: 'ex', listen: false, vol: 70, inst: 'piano', rampOn: false, rFrom: 60, rTo: 100, rStep: 5, rEvery: 2, rUnit: 'comb', rDir: 'up' }, load('rds-random2', {}) || {});
   (function cleanR() {
     const c = function (v, lo, hi, d) { v = Math.round(+v); return v >= lo && v <= hi ? v : d; };
     R.n = c(R.n, 1, 99, 8); R.bars = c(R.bars, 1, 16, 4); R.lead = c(R.lead, 1, 8, 4);
     R.src = R.src === 'sel' ? 'sel' : 'ex';
     R.listen = R.listen === true;
     R.vol = c(R.vol, 0, 100, 70);
+    R.inst = INST[R.inst] ? R.inst : 'piano';
+    R.rampOn = R.rampOn === true;
+    R.rFrom = c(R.rFrom, 20, 300, 60); R.rTo = c(R.rTo, 20, 300, 100); R.rStep = c(R.rStep, 1, 50, 5);
+    R.rUnit = { bars: 1, sec: 1, comb: 1 }[R.rUnit] ? R.rUnit : 'comb';
+    R.rEvery = c(R.rEvery, 1, R.rUnit === 'sec' ? 600 : 99, 2);
+    R.rDir = R.rDir === 'down' ? 'down' : 'up';
   })();
   function saveR() { store('rds-random2', R); }
 
 
-  /* le note dell'esercizio: un suono semplice ad arco (due onde a dente di sega leggermente scordate, filtrate) */
+  /* le note dell'esercizio: 4 strumenti semplici, costruiti con onde e filtri (nessun file da scaricare) */
+  const PIANO_H = [1, 0.62, 0.38, 0.26, 0.14, 0.1, 0.06, 0.04, 0.025, 0.015];
+  const FLUTE_H = [1, 0.16, 0.05, 0.02];
+  const ORGAN_H = [1, 0.75, 0.5, 0.38, 0, 0.22];
+  const waveCache = new WeakMap();
+  const noiseCache = new WeakMap();
+  function periodic(c, key, amps) {
+    let m = waveCache.get(c);
+    if (!m) { m = {}; waveCache.set(c, m); }
+    if (!m[key]) {
+      const re = new Float32Array(amps.length + 1);
+      const im = new Float32Array(amps.length + 1);
+      for (let i = 0; i < amps.length; i++) im[i + 1] = amps[i];
+      m[key] = c.createPeriodicWave(re, im);
+    }
+    return m[key];
+  }
+  function noiseBuf(c) {
+    let b = noiseCache.get(c);
+    if (!b) {
+      b = c.createBuffer(1, c.sampleRate * 2, c.sampleRate);
+      const d = b.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      noiseCache.set(c, b);
+    }
+    return b;
+  }
+  /* c = contesto audio, out = dove mandare il suono; ritorna { os: sorgenti da fermare, g: volume finale } */
+  function synthNote(c, out, inst, freq, t0, dur, lvl) {
+    const os = [];
+    const g = c.createGain();
+    g.connect(out);
+    const end = t0 + dur;
+    const osc = function (type, wave, detune) {
+      const o = c.createOscillator();
+      if (wave) o.setPeriodicWave(wave); else o.type = type;
+      o.frequency.value = freq;
+      o.detune.value = detune || 0;
+      os.push(o);
+      return o;
+    };
+    const filt = function (type, f, q, gain) {
+      const x = c.createBiquadFilter();
+      x.type = type; x.frequency.value = f; x.Q.value = q || 0.7;
+      if (gain != null) x.gain.value = gain;
+      return x;
+    };
+    const vibrato = function (targets, depth, delay) {
+      const l = c.createOscillator();
+      const vg = c.createGain();
+      l.frequency.value = 5.3;
+      vg.gain.setValueAtTime(0, t0);
+      vg.gain.linearRampToValueAtTime(depth, t0 + Math.min(delay, dur * 0.7));
+      l.connect(vg);
+      targets.forEach(function (o) { vg.connect(o.detune); });
+      os.push(l);
+    };
+    const env = function (peak, att, rel) {
+      g.gain.setValueAtTime(0, t0);
+      g.gain.linearRampToValueAtTime(peak, t0 + att);
+      g.gain.setValueAtTime(peak, Math.max(t0 + att, end - rel));
+      g.gain.linearRampToValueAtTime(0, end);
+    };
+    if (inst === 'piano') {
+      const lp = filt('lowpass', Math.min(8000, freq * 10), 0.5);
+      lp.frequency.setValueAtTime(Math.min(8000, freq * 10), t0);
+      lp.frequency.exponentialRampToValueAtTime(Math.max(600, freq * 2.2), t0 + Math.min(dur, 0.9));
+      const w = periodic(c, 'piano', PIANO_H);
+      [-1.6, 1.6].forEach(function (d) { osc(null, w, d).connect(lp); });
+      lp.connect(g);
+      const peak = lvl * 0.5;
+      g.gain.setValueAtTime(0, t0);
+      g.gain.linearRampToValueAtTime(peak, t0 + 0.004);
+      g.gain.exponentialRampToValueAtTime(peak * 0.2, Math.max(t0 + 0.05, end - 0.05));
+      g.gain.linearRampToValueAtTime(0, end);
+    } else if (inst === 'violin') {
+      const lp = filt('lowpass', Math.max(1400, Math.min(4500, freq * 5)), 0.8);
+      const body = filt('peaking', 700, 1, 5);
+      const o1 = osc('sawtooth', null, -5);
+      const o2 = osc('sawtooth', null, 5);
+      o1.connect(lp); o2.connect(lp);
+      lp.connect(body); body.connect(g);
+      vibrato([o1, o2], 9, 0.45);
+      env(lvl * 0.22, 0.07, 0.06);
+    } else if (inst === 'flute') {
+      const lp = filt('lowpass', 3200, 0.6);
+      const o = osc(null, periodic(c, 'flute', FLUTE_H), 0);
+      o.connect(lp); lp.connect(g);
+      vibrato([o], 6, 0.35);
+      const n = c.createBufferSource();
+      n.buffer = noiseBuf(c); n.loop = true;
+      const bp = filt('bandpass', Math.min(5000, freq * 2), 1.2);
+      const ng = c.createGain(); ng.gain.value = 0.05;
+      n.connect(bp); bp.connect(ng); ng.connect(g);
+      os.push(n);
+      env(lvl * 0.5, 0.05, 0.08);
+    } else {
+      const lp = filt('lowpass', 4500, 0.5);
+      osc(null, periodic(c, 'organ', ORGAN_H), 0).connect(lp);
+      lp.connect(g);
+      env(lvl * 0.45, 0.012, 0.045);
+    }
+    os.forEach(function (o) { o.start(t0); o.stop(end + 0.05); });
+    return { os: os, g: g };
+  }
+  window.__rdsSynth = synthNote;          // serve ai test automatici
+
   const voices = [];
   function noteFreq(midi) { return P.fhz * Math.pow(2, (midi - 69) / 12); }
   function playNote(freq, t0, dur) {
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass'; lp.frequency.value = Math.min(3200, freq * 5); lp.Q.value = 0.7;
-    const g = ctx.createGain();
-    const lvl = 0.5 * Math.pow(R.vol / 100, 2);
-    g.gain.setValueAtTime(0, t0);
-    g.gain.linearRampToValueAtTime(lvl, t0 + 0.03);
-    g.gain.setValueAtTime(lvl, t0 + dur * 0.8);
-    g.gain.linearRampToValueAtTime(0, t0 + dur * 0.97);
-    lp.connect(g); g.connect(pdest);
-    const os = [-5, 5].map(function (cents) {
-      const o = ctx.createOscillator();
-      o.type = 'sawtooth'; o.frequency.value = freq; o.detune.value = cents;
-      o.connect(lp); o.start(t0); o.stop(t0 + dur);
-      return o;
-    });
-    const v = { os: os, g: g, lp: lp };
+    const v = synthNote(ctx, pdest, R.inst, freq, t0, dur, Math.pow(R.vol / 100, 2));
     voices.push(v);
-    os[0].onended = function () {
+    v.os[0].onended = function () {
       const i = voices.indexOf(v); if (i >= 0) voices.splice(i, 1);
-      try { g.disconnect(); lp.disconnect(); os.forEach(function (o) { o.disconnect(); }); } catch (e) { /* ignora */ }
+      try { v.g.disconnect(); } catch (e) { /* ignora */ }
     };
   }
   /* tutta la battuta: le note si dividono in parti uguali */
@@ -1300,7 +1472,10 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
   function stopVoices() {
     const t = ctx ? ctx.currentTime : 0;
     voices.splice(0).forEach(function (v) {
-      try { v.g.gain.cancelScheduledValues(t); v.g.gain.setValueAtTime(v.g.gain.value, t); v.g.gain.linearRampToValueAtTime(0, t + 0.04); v.os.forEach(function (o) { o.stop(t + 0.06); }); } catch (e) { /* ignora */ }
+      try {
+        v.g.gain.cancelScheduledValues(t); v.g.gain.setValueAtTime(v.g.gain.value, t); v.g.gain.linearRampToValueAtTime(0, t + 0.04);
+        v.os.forEach(function (o) { try { o.stop(t + 0.06); } catch (e) { /* già fermo */ } });
+      } catch (e) { /* ignora */ }
     });
   }
 
@@ -1346,6 +1521,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     ban.className = 'rbanner' + (ph === 'listen' ? ' listen' : ph === 'play' ? ' play' : '');
     setText($('rBanMsg'), ph === 'listen' ? 'ASCOLTA · non suonare' : ph === 'play' ? (RS.listen ? 'SUONA · ripeti quello che hai sentito' : 'SUONA') : ph === 'ready' ? (RS.listen ? 'PRONTI · alla prossima battuta ascolti la prima combinazione' : 'PRONTI · alla prossima battuta parte la prima combinazione') : '');
     $('rNowBox').classList.toggle('dim', ph === 'listen');
+    setText($('rTempoNow'), RS.on && RS.ramp ? Math.round(P.bpm * 10) / 10 + ' BPM' : '');
     if (!ph) setText($('rBanCount'), '');
   }
 
@@ -1398,14 +1574,33 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
       RS.phase = p.phase;
       if (p.phase === 'play') { RS.cur = p.k; RS.barsIn = p.r; if (p.r === 1) setText($('rStatus'), 'In corso: ' + (p.k + 1) + ' di ' + RS.seq.length + '.'); }
       else if (p.phase === 'listen') setText($('rStatus'), 'Ascolta la combinazione ' + (p.k + 1) + ' di ' + RS.seq.length + '.');
+      if (RS.ramp) ui();
       rRender();
     }
     if (i % sg().sub === 0) rCountdown(i);
   }
 
   /* piano dell'ascolto: battuta 0 = attesa; poi per ogni combinazione una battuta in cui l'app la suona e R.bars battute in cui la suoni tu */
+  /* velocità crescente (o decrescente): il tempo del metronomo cambia sempre all'inizio di una battuta, già in fase di programmazione dei clic */
+  function rampApply(b, t) {
+    if (!RS.ramp) return;
+    const E = R.rEvery;
+    const C = (RS.listen ? 1 : 0) + R.bars;
+    let idx = 0;
+    if (b >= 1) {
+      if (R.rUnit === 'bars') idx = Math.floor((b - 1) / E);
+      else if (R.rUnit === 'comb') idx = Math.floor(Math.min(Math.floor((b - 1) / C), RS.seq.length - 1) / E);
+      else idx = Math.floor(Math.max(0, t - RS.t0) / E);
+    }
+    const raw = R.rDir === 'up' ? R.rFrom + R.rStep * idx : R.rFrom - R.rStep * idx;
+    const v = R.rDir === 'up' ? Math.min(R.rTo, raw) : Math.max(R.rTo, raw);
+    if (v !== P.bpm) { P.bpm = v; RS.rampLevel = idx + 1; }
+  }
   function rSchedule(t) {
     const b = RS.sbar++;
+    if (b === 0) RS.t0 = t;
+    rampApply(b, t);
+    if (!RS.listen) return;
     const C = 1 + R.bars;
     if (b < 1 || (b - 1) >= RS.seq.length * C || (b - 1) % C !== 0) return;
     playPattern(RS.seq[Math.floor((b - 1) / C)], t, clickGap() * sg().n);
@@ -1417,6 +1612,17 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     RS.seq = buildSeq(R.n);
     RS.cur = -1; RS.next = -1; RS.barsIn = 0; RS.p = null; RS.pv = -1;
     RS.sbar = 0; RS.bar = -1; RS.phase = ''; RS.listen = R.listen;
+    RS.ramp = R.rampOn; RS.bpm0 = P.bpm; RS.t0 = 0; RS.rampLevel = 1;
+    if (RS.ramp) {
+      const okR = R.rDir === 'up' ? R.rTo >= R.rFrom : R.rTo <= R.rFrom;
+      if (!okR) {
+        setMsg(R.rDir === 'up' ? 'Nella velocità crescente il tempo finale deve essere almeno quello di partenza.' : 'Nella velocità decrescente il tempo finale deve essere al massimo quello di partenza.');
+        flagBad($('rFrom')); flagBad($('rTo'));
+        return;
+      }
+      setMsg('');
+      P.bpm = R.rFrom;
+    }
     RS.on = true;
     $('rNow').rk = null;
     setText($('rStatus'), 'Parte il metronomo: ascolta la prima battuta.');
@@ -1429,6 +1635,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     RS.on = false;
     stopVoices();
     if (M.on) metroStop();
+    if (RS.ramp) { P.bpm = RS.bpm0; saveP(); }     // alla fine il metronomo torna al tempo che avevi
     setText($('rStatus'), done ? 'Finito: hai fatto ' + RS.seq.length + (RS.seq.length === 1 ? ' combinazione.' : ' combinazioni.') : 'Fermato.');
     rRender();
     ui();
@@ -1450,6 +1657,17 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     setText($('rTempo'), P.sig + (sg().sub > 1 ? ' (battiti da tre clic)' : '') + ' · il tempo in battuta si cambia nel metronomo in alto');
     $('rListen').checked = R.listen;
     $('rVolBox').hidden = !R.listen;
+    const ib = $('rInst').children;
+    for (let i = 0; i < ib.length; i++) ib[i].setAttribute('aria-pressed', ib[i].getAttribute('data-inst') === R.inst ? 'true' : 'false');
+    $('rRamp').checked = R.rampOn;
+    $('rRampBox').hidden = !R.rampOn;
+    setText($('rRampLbl'), R.rDir === 'down' ? 'Velocità decrescente' : 'Velocità crescente');
+    showField($('rFrom'), String(R.rFrom)); showField($('rTo'), String(R.rTo)); showField($('rStep'), String(R.rStep)); showField($('rEvery'), String(R.rEvery));
+    if (document.activeElement !== $('rUnit')) $('rUnit').value = R.rUnit;
+    const rdb = $('rDir').children;
+    for (let i = 0; i < rdb.length; i++) rdb[i].setAttribute('aria-pressed', rdb[i].getAttribute('data-dir') === R.rDir ? 'true' : 'false');
+    $('bgBox').hidden = !bgOK();
+    $('bgMode').checked = P.bg;
     if (document.activeElement !== $('rVol')) $('rVol').value = String(R.vol);
   }
 
@@ -1627,9 +1845,36 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
     const t = e.target && e.target.closest ? e.target.closest('button[data-r]') : null;
     if (!t || t.disabled) return;
     const key = t.getAttribute('data-r');
-    const lim = { n: [1, 99], bars: [1, 16], lead: [1, 8] }[key];
+    const lim = { n: [1, 99], bars: [1, 16], lead: [1, 8], rFrom: [20, 300], rTo: [20, 300], rStep: [1, 50], rEvery: [1, R.rUnit === 'sec' ? 600 : 99] }[key];
     R[key] = clamp(R[key] + (+t.getAttribute('data-d')), lim[0], lim[1]);
     saveR(); ui();
+  });
+  $('rInst').addEventListener('click', function (e) {
+    const v = e.target && e.target.getAttribute && e.target.getAttribute('data-inst');
+    if (!v || !INST[v]) return;
+    R.inst = v; saveR(); ui();
+    if (AC) { audio(); resumeCtx().then(function () { playNote(noteFreq(69), ctx.currentTime + 0.05, 0.9); }); }   // piccola prova del suono (il La)
+  });
+  $('rRamp').addEventListener('change', function (e) { R.rampOn = e.target.checked; saveR(); ui(); });
+  $('rUnit').addEventListener('change', function (e) {
+    const u = e.target.value;
+    if (!{ bars: 1, sec: 1, comb: 1 }[u]) return;
+    R.rUnit = u; R.rEvery = clamp(R.rEvery, 1, u === 'sec' ? 600 : 99); saveR(); ui();
+  });
+  $('rDir').addEventListener('click', function (e) {
+    const d = e.target && e.target.getAttribute && e.target.getAttribute('data-dir');
+    if (!d || d === R.rDir) return;
+    R.rDir = d;
+    const t = R.rFrom; R.rFrom = R.rTo; R.rTo = t;       // sali 60→100 diventa scendi 100→60
+    saveR(); ui();
+  });
+  rField('rFrom', 'rFrom', 20, 300); rField('rTo', 'rTo', 20, 300); rField('rStep', 'rStep', 1, 50); rField('rEvery', 'rEvery', 1, 600);
+  $('bgMode').addEventListener('change', function (e) {
+    P.bg = e.target.checked; saveP();
+    if (ctx) setBg(P.bg, true);
+  });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && P.bg && ctx) { try { if (ctx.state !== 'running') ctx.resume(); const el = $('bgAudio'); if (el.paused) el.play().catch(function () {}); } catch (x) { /* ignora */ } }
   });
   rField('rN', 'n', 1, 99); rField('rBars', 'bars', 1, 16); rField('rLead', 'lead', 1, 8);
   bindField('rBpm', function (v) { const x = parseNum(v); if (!isFinite(x)) return false; setBpm(x); return true; });
@@ -1679,7 +1924,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
 </script>
 
 <script>
-/* Rel29: registra il service worker, così le pagine restano disponibili senza rete dopo la prima apertura. */
+/* Rel30: registra il service worker, così le pagine restano disponibili senza rete dopo la prima apertura. */
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
 }

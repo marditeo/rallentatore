@@ -219,12 +219,23 @@ details.keys summary { cursor: pointer; font-weight: 500; }
   .btn.small { padding: 6px 10px; }
 }
 
-/* Rel29: allenamento e collegamenti agli strumenti */
+/* Rel30: allenamento compatto */
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px 14px; }
 .grid2 .num { width: 100%; text-align: left; }
 .big.sm { font-size: 26px; }
 a.btn { text-decoration: none; }
 .btn[aria-pressed="true"] kbd { opacity: 0.8; }
+.trhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 32px; }
+.trhead .big { font-size: 38px; }
+.trhead .big small { font-size: 15px; }
+.trhead .big small.pre { margin: 0 8px 0 0; }
+.trfields { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 14px; }
+.tf { display: flex; flex-direction: column; gap: 3px; }
+.tf label { font-size: 12px; color: var(--muted); white-space: nowrap; line-height: 1.1; }
+.tf .num { width: 64px; height: 38px; text-align: center; font-size: 18px; padding: 0 4px; }
+.tfrow { display: flex; gap: 6px; align-items: center; }
+.tf select { height: 38px; font: inherit; font-size: 15px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 0 6px; }
+.tf .seg { display: flex; gap: 4px; }
 body { padding-bottom: env(safe-area-inset-bottom); }
 @media (prefers-reduced-motion: reduce) { .btn:active:not(:disabled) { transform: none; } }
 </style>
@@ -233,7 +244,7 @@ body { padding-bottom: env(safe-area-inset-bottom); }
   <header class="top">
     <div>
       <h1>Rallentatore da studio</h1>
-      <p class="note" id="ver">Versione 29 · in fondo alla pagina c'è la lista dei brani caricati prima</p>
+      <p class="note" id="ver">Versione 30 · in fondo alla pagina c'è la lista dei brani caricati prima</p>
     </div>
     <div class="filebox">
       <input id="file" type="file" multiple accept="audio/*,.opus,.ogg,.m4a,.mp3,.wav,.flac,.aac,.webm">
@@ -354,19 +365,23 @@ body { padding-bottom: env(safe-area-inset-bottom); }
     </div>
   </section>
 
-  <section class="deck" aria-label="Allenamento a velocità crescente">
+  <section class="deck" aria-label="Allenamento a velocità variabile">
     <div class="cols">
       <div class="col">
-        <h2>Allenamento: la velocità sale</h2>
-        <div class="big sm" id="tBig">–</div>
+        <h2 id="tTitle">Allenamento: la velocità sale</h2>
+        <div class="trhead">
+          <div class="big" id="tNow"><small class="pre">Ora</small>100%</div>
+          <div class="big" id="tBig">–</div>
+        </div>
         <p class="note" id="tSub"></p>
-        <div class="grid2">
-          <div class="field"><label for="tBpm">Tempo del brano (BPM)</label><input class="num" id="tBpm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="100" aria-label="Tempo del brano a velocità 100 per cento, in battiti al minuto"></div>
-          <div class="field"><label for="tBeats">Battiti in battuta</label><input class="num" id="tBeats" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="4" aria-label="Battiti in ogni battuta del brano, da 1 a 12"></div>
-          <div class="field"><label for="tStart">Parti da (%)</label><input class="num" id="tStart" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="60" aria-label="Velocità di partenza, da 25 a 200 per cento"></div>
-          <div class="field"><label for="tEnd">Fino a (%)</label><input class="num" id="tEnd" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="100" aria-label="Velocità finale, da 25 a 200 per cento"></div>
-          <div class="field"><label for="tStep">Sali di (%)</label><input class="num" id="tStep" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="5" aria-label="Quanto sale la velocità a ogni passo, in per cento"></div>
-          <div class="field"><label for="tBars">Ogni (battute)</label><input class="num" id="tBars" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="8" aria-label="Dopo quante battute la velocità sale"></div>
+        <div class="trfields">
+          <div class="tf"><label for="tBpm">Brano (BPM)</label><input class="num" id="tBpm" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="100" aria-label="Tempo del brano a velocità 100 per cento, in battiti al minuto"></div>
+          <div class="tf"><label for="tBeats">Battiti</label><input class="num" id="tBeats" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="4" aria-label="Battiti in ogni battuta del brano, da 1 a 12"></div>
+          <div class="tf"><label for="tStart">Da (%)</label><input class="num" id="tStart" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="60" aria-label="Velocità di partenza, da 25 a 200 per cento"></div>
+          <div class="tf"><label for="tEnd">A (%)</label><input class="num" id="tEnd" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="100" aria-label="Velocità finale, da 25 a 200 per cento"></div>
+          <div class="tf"><label for="tStep">Passo (%)</label><input class="num" id="tStep" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="5" aria-label="Di quanto cambia la velocità a ogni passo, in per cento"></div>
+          <div class="tf"><label for="tEvery">Ogni</label><div class="tfrow"><input class="num" id="tEvery" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="8" aria-label="Dopo quanto tempo la velocità cambia"><select id="tUnit" aria-label="Unità: battute, secondi o loop"><option value="bars">battute</option><option value="sec">secondi</option><option value="loop">loop</option></select></div></div>
+          <div class="tf"><label id="tDirLbl">Direzione</label><div class="seg" id="tDir" role="group" aria-labelledby="tDirLbl"><button class="btn small" type="button" data-dir="up" aria-pressed="true">Sali</button><button class="btn small" type="button" data-dir="down" aria-pressed="false">Scendi</button></div></div>
         </div>
         <div class="row">
           <button class="btn primary" id="tGo" type="button" aria-pressed="false">Avvia l'allenamento</button>
@@ -1314,6 +1329,7 @@ class Engine {
     this.FADE = Math.max(16, Math.round(sampleRate * 0.006));
     this.segs = [];            // ultimi tratti renderizzati, per mostrare il cursore
     this.adv = 0;              // frame del brano percorsi in ascolto (i ritorni del loop contano): serve a contare le battute
+    this.laps = 0;             // quante volte il loop A-B è tornato ad A
     this.lead = 0;             // anticipo medio dell'algoritmo di time-stretch (frame)
     this.st.tempo = 1;
   }
@@ -1438,7 +1454,7 @@ class Engine {
       p += len * this.speed;
       this.adv += len * this.speed;
       off += len;
-      if (this.loop && p >= bEff) p = aEff + ((p - bEff) % (bEff - aEff));
+      if (this.loop && p >= bEff) { p = aEff + ((p - bEff) % (bEff - aEff)); this.laps++; }
     }
     this.pos = p;
     if (this.segs.length > 64) this.segs.splice(0, this.segs.length - 64);
@@ -2841,12 +2857,13 @@ class Engine {
     }
   });
 
-  /* ---------- allenamento: la velocità sale ogni N battute ---------- */
+  /* ---------- allenamento: la velocità sale (o scende) ogni N battute, secondi o loop ---------- */
   /* Il metronomo e il diapason sono nella pagina «Strumenti». Qui resta solo l'allenamento, che lavora sul brano:
      conta le battute dal tempo del brano (tBpm, tBeats), contando i frame percorsi dal motore audio (engine.adv),
-     anche con la pagina in secondo piano. */
+     i secondi di ascolto e i giri del tratto A–B (engine.laps), anche con la pagina in secondo piano. */
 
-  const P = { tBpm: 100, tBeats: 4, tStart: 60, tEnd: 100, tStep: 5, tBars: 8 };
+  const P = { tBpm: 100, tBeats: 4, tStart: 60, tEnd: 100, tStep: 5, tEvery: 8, tUnit: 'bars', tDir: 'up' };
+  const EVERY_MAX = { bars: 99, sec: 600, loop: 99 };
   (function loadP() {
     let o = {};
     try { o = JSON.parse(localStorage.getItem('rds-allen') || localStorage.getItem('rds-pratica') || '{}') || {}; } catch (e) { o = {}; }
@@ -2856,16 +2873,25 @@ class Engine {
     P.tStart = Math.round(n(o.tStart, 25, 200, P.tStart));
     P.tEnd = Math.round(n(o.tEnd, 25, 200, P.tEnd));
     P.tStep = Math.round(n(o.tStep, 1, 100, P.tStep));
-    P.tBars = Math.round(n(o.tBars, 1, 99, P.tBars));
+    P.tUnit = EVERY_MAX[o.tUnit] ? o.tUnit : 'bars';
+    P.tEvery = Math.round(n(o.tEvery, 1, EVERY_MAX[P.tUnit], n(o.tBars, 1, 99, P.tEvery)));
+    P.tDir = o.tDir === 'down' ? 'down' : 'up';
   })();
   function saveP() { try { localStorage.setItem('rds-allen', JSON.stringify(P)); } catch (e) { /* ignora */ } }
 
   function practiceReroute() { /* niente da ricollegare: qui non ci sono altri suoni */ }
 
-  const T = { on: false, carry: 0, stepFrom: 0, stepNo: 1, total: 1, reached: false };
+  const T = { on: false, carry: 0, lapsCarry: 0, secAcc: 0, last: null, stepFrom: 0, stepNo: 1, total: 1, reached: false };
 
   function barFrames() { return engine.sr * (60 / P.tBpm) * P.tBeats; }   // battuta del brano a velocità 100%
   function barsFloat() { return (engine.adv + T.carry) / barFrames(); }
+  /* quanto è passato dall'inizio dell'allenamento, nell'unità scelta */
+  function progress() {
+    if (!engine) return 0;
+    if (P.tUnit === 'sec') return T.secAcc;
+    if (P.tUnit === 'loop') return (engine.laps || 0) + T.lapsCarry;
+    return barsFloat();
+  }
 
   function rebase(fn) {
     // cambiando tempo o battiti del brano, il conteggio delle battute resta dov'era
@@ -2887,10 +2913,14 @@ class Engine {
   function trainerRange() {
     const s = clamp(Math.round(P.tStart), 25, 200);
     const e = clamp(Math.round(P.tEnd), 25, 200);
-    return { s: s, e: e, step: Math.max(1, Math.round(P.tStep)), bars: Math.max(1, Math.round(P.tBars)) };
+    return { s: s, e: e, step: Math.max(1, Math.round(P.tStep)), every: Math.max(1, Math.round(P.tEvery)) };
+  }
+  function rangeOk(r) { return P.tDir === 'up' ? r.e >= r.s : r.e <= r.s; }
+  function everyText(r) {
+    return r.every + (P.tUnit === 'bars' ? (r.every === 1 ? ' battuta' : ' battute') : P.tUnit === 'sec' ? (r.every === 1 ? ' secondo' : ' secondi') : (r.every === 1 ? ' loop' : ' loop'));
   }
 
-  function practiceCarry(old) { if (T.on) T.carry += old.adv; }
+  function practiceCarry(old) { if (T.on) { T.carry += old.adv; T.lapsCarry += old.laps || 0; } }
 
   function stopTrainer() {
     if (!T.on) return;
@@ -2902,19 +2932,26 @@ class Engine {
   function startTrainer() {
     if (!engine) return;
     const r = trainerRange();
-    if (r.e < r.s) {
-      setMsg('La velocità finale deve essere almeno quella di partenza.');
+    if (!rangeOk(r)) {
+      setMsg(P.tDir === 'up' ? 'La velocità finale deve essere almeno quella di partenza.' : 'Scendendo, la velocità finale deve essere al massimo quella di partenza.');
       flagBad($('tStart'));
       flagBad($('tEnd'));
+      return;
+    }
+    if (P.tUnit === 'loop' && !(S.loop && validRegion())) {
+      setMsg('Per cambiare velocità ogni loop imposta il tratto A–B e accendi la ripetizione.');
       return;
     }
     setMsg('');
     T.on = true;
     T.carry = -engine.adv;
+    T.lapsCarry = -(engine.laps || 0);
+    T.secAcc = 0;
+    T.last = null;
     T.stepFrom = 0;
     T.stepNo = 1;
-    T.total = Math.ceil((r.e - r.s) / r.step) + 1;
-    T.reached = r.s >= r.e;
+    T.total = Math.ceil(Math.abs(r.e - r.s) / r.step) + 1;
+    T.reached = r.s === r.e;
     setSpeed(r.s);
     if (validRegion()) seekTo(S.a);
     if (!uiPlaying()) play();
@@ -2923,15 +2960,20 @@ class Engine {
   function toggleTrainer() { if (T.on) stopTrainer(); else startTrainer(); }
 
   function trainerTick() {
-    if (!T.on || !engine || !engine.playing) return;
+    if (!T.on || !engine) return;
+    if (!engine.playing) { T.last = null; return; }
+    const now = performance.now();
+    if (T.last != null) T.secAcc += Math.min(0.5, (now - T.last) / 1000);
+    T.last = now;
     const r = trainerRange();
-    if (!T.reached && barsFloat() - T.stepFrom >= r.bars) {
-      T.stepFrom += r.bars;
-      if (S.speed < r.e) {
-        setSpeed(Math.min(r.e, S.speed + r.step));
+    if (!T.reached && progress() - T.stepFrom >= r.every) {
+      T.stepFrom += r.every;
+      const nxt = P.tDir === 'up' ? Math.min(r.e, S.speed + r.step) : Math.max(r.e, S.speed - r.step);
+      if (nxt !== S.speed) {
+        setSpeed(nxt);
         T.stepNo++;
       }
-      if (S.speed >= r.e) T.reached = true;
+      if (S.speed === r.e) T.reached = true;
     }
     practiceUI();
   }
@@ -2943,28 +2985,37 @@ class Engine {
 
   function practiceUI() {
     const r = trainerRange();
+    const down = P.tDir === 'down';
     showField($('tBpm'), num1(P.tBpm));
     showField($('tBeats'), String(P.tBeats));
     showField($('tStart'), String(P.tStart));
     showField($('tEnd'), String(P.tEnd));
     showField($('tStep'), String(P.tStep));
-    showField($('tBars'), String(P.tBars));
+    showField($('tEvery'), String(P.tEvery));
+    if (document.activeElement !== $('tUnit')) $('tUnit').value = P.tUnit;
+    const db = $('tDir').children;
+    for (let i = 0; i < db.length; i++) db[i].setAttribute('aria-pressed', db[i].getAttribute('data-dir') === P.tDir ? 'true' : 'false');
+    setText($('tTitle'), down ? 'Allenamento: la velocità scende' : 'Allenamento: la velocità sale');
     setText($('tGo'), T.on ? 'Ferma l\'allenamento' : 'Avvia l\'allenamento');
     $('tGo').setAttribute('aria-pressed', T.on ? 'true' : 'false');
+    setHtml($('tNow'), '<small class="pre">Ora</small>' + (engine ? S.speed : 100) + '%');
     let big;
     let sub;
     if (!T.on) {
       big = '–';
-      sub = r.e < r.s
-        ? 'La velocità finale deve essere almeno quella di partenza.'
-        : 'Parte dal ' + r.s + '% e sale di ' + r.step + '% ogni ' + r.bars + (r.bars === 1 ? ' battuta' : ' battute') + ', fino al ' + r.e + '%.';
+      sub = !rangeOk(r)
+        ? (down ? 'Scendendo, la velocità finale deve essere al massimo quella di partenza.' : 'La velocità finale deve essere almeno quella di partenza.')
+        : 'Parte dal ' + r.s + '% e ' + (down ? 'scende' : 'sale') + ' di ' + r.step + '% ogni ' + everyText(r) + ', fino al ' + r.e + '%.';
     } else if (T.reached) {
-      big = S.speed + '%<small>velocità finale</small>';
+      big = '<small class="pre">velocità finale</small>' + S.speed + '%';
       sub = 'Raggiunta: resta a questa velocità finché non fermi l\'allenamento.';
     } else if (engine) {
-      const rem = Math.max(1, r.bars - Math.floor(barsFloat() - T.stepFrom + 1e-9));
-      big = rem + '<small>' + (rem === 1 ? 'battuta rimasta' : 'battute rimaste') + '</small>';
-      sub = (uiPlaying() ? '' : 'In pausa · ') + 'Ora ' + S.speed + '%, poi ' + Math.min(r.e, S.speed + r.step) + '% · livello ' + T.stepNo + ' di ' + T.total + '.';
+      const done = progress() - T.stepFrom;
+      const rem = P.tUnit === 'sec' ? Math.max(1, Math.ceil(r.every - done - 1e-9)) : Math.max(1, r.every - Math.floor(done + 1e-9));
+      const lab = P.tUnit === 'bars' ? (rem === 1 ? 'battuta rimasta' : 'battute rimaste') : P.tUnit === 'sec' ? (rem === 1 ? 'secondo rimasto' : 'secondi rimasti') : (rem === 1 ? 'loop rimasto' : 'loop rimasti');
+      big = rem + '<small>' + lab + '</small>';
+      const nxt = down ? Math.max(r.e, S.speed - r.step) : Math.min(r.e, S.speed + r.step);
+      sub = (uiPlaying() ? '' : 'In pausa · ') + 'Poi ' + nxt + '% · livello ' + T.stepNo + ' di ' + T.total + '.';
     }
     if (big != null) {
       setHtml($('tBig'), big);
@@ -2985,7 +3036,32 @@ class Engine {
   trainerField('tStart', 'tStart', 25, 200);
   trainerField('tEnd', 'tEnd', 25, 200);
   trainerField('tStep', 'tStep', 1, 100);
-  trainerField('tBars', 'tBars', 1, 99);
+  bindField('tEvery', function (v) {
+    const x = parseNum(v);
+    if (!isFinite(x)) return false;
+    P.tEvery = clamp(Math.round(x), 1, EVERY_MAX[P.tUnit]);
+    saveP();
+    practiceUI();
+    return true;
+  });
+  $('tUnit').addEventListener('change', function (e) {
+    const u = e.target.value;
+    if (!EVERY_MAX[u]) return;
+    P.tUnit = u;
+    P.tEvery = clamp(P.tEvery, 1, EVERY_MAX[u]);
+    if (T.on && engine) T.stepFrom = progress();      // il conteggio riparte dal momento del cambio
+    saveP();
+    practiceUI();
+  });
+  $('tDir').addEventListener('click', function (e) {
+    const d = e.target && e.target.getAttribute && e.target.getAttribute('data-dir');
+    if (!d || d === P.tDir) return;
+    P.tDir = d;
+    const s = P.tStart; P.tStart = P.tEnd; P.tEnd = s;      // scambia partenza e arrivo: sali 60→100 diventa scendi 100→60
+    stopTrainer();
+    saveP();
+    practiceUI();
+  });
   bindField('tBpm', function (v) {
     const x = parseNum(v);
     if (!isFinite(x)) return false;
@@ -3418,7 +3494,7 @@ class Engine {
 </script>
 
 <script>
-/* Rel29: registra il service worker, così le pagine restano disponibili senza rete dopo la prima apertura. */
+/* Rel30: registra il service worker, così le pagine restano disponibili senza rete dopo la prima apertura. */
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
 }
