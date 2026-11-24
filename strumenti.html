@@ -651,37 +651,45 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
       mgain = ctx.createGain();
       mgain.connect(pdest);
       applyMVol();
-      if (P.bg) setBg(true, false);
     }
     return ctx;
   }
-  /* audio in background: il suono esce da un elemento audio, che su iPad e telefono può continuare con altre app aperte o con lo schermo bloccato */
-  let bgDest = null;
-  function bgOK() { return !!(AC && AC.prototype.createMediaStreamDestination && window.MediaStream && $('bgAudio')); }
+  /* audio in background: il suono resta sul normale canale del browser (nessun giro extra, quindi niente eco né cambi di tono);
+     si dichiara la sessione audio "di riproduzione" e si tiene attivo un elemento audio silenzioso, così iPad e telefono non fermano la pagina */
+  let bgUrl = null;
+  function silentUrl() {
+    if (bgUrl) return bgUrl;
+    const n = 8000, b = new Uint8Array(44 + n), v = new DataView(b.buffer);
+    const w = function (o, t) { for (let i = 0; i < t.length; i++) b[o + i] = t.charCodeAt(i); };
+    w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
+    v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+    w(36, 'data'); v.setUint32(40, n, true);
+    for (let i = 0; i < n; i++) b[44 + i] = 128;
+    bgUrl = URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
+    return bgUrl;
+  }
+  function bgOK() { return !!($('bgAudio') && window.Blob && window.URL); }
   function setBg(on, fromClick) {
-    if (!bgOK() || !ctx) return false;
+    if (!bgOK()) return false;
     const el = $('bgAudio');
     try {
       if (on) {
-        if (!bgDest) { bgDest = ctx.createMediaStreamDestination(); el.srcObject = bgDest.stream; }
-        pdest.disconnect();
-        pdest.connect(bgDest);
+        try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* ignora */ }
+        if (!el.src) { el.src = silentUrl(); el.loop = true; el.volume = 0.01; }
         const p = el.play();
         if (p && p.catch) p.catch(function () {
-          if (fromClick) setMsg('Il browser non permette l\'audio in background: ho rimesso quello normale.');
-          P.bg = false; saveP(); setBg(false); ui();
+          if (fromClick) setMsg('Il browser non permette l\'audio in background.');
+          P.bg = false; saveP(); ui();
         });
         if ('mediaSession' in navigator) {
           try { navigator.mediaSession.metadata = new MediaMetadata({ title: 'Strumenti per lo studio', artist: 'Rallentatore da studio' }); } catch (e) { /* ignora */ }
         }
       } else {
-        pdest.disconnect();
-        pdest.connect(ctx.destination);
+        try { if (navigator.audioSession) navigator.audioSession.type = 'auto'; } catch (e) { /* ignora */ }
         try { el.pause(); } catch (e) { /* ignora */ }
       }
       return true;
     } catch (e) {
-      try { pdest.disconnect(); pdest.connect(ctx.destination); } catch (e2) { /* ignora */ }
       P.bg = false; saveP();
       setMsg('Non riesco ad attivare l\'audio in background su questo browser.');
       return false;
@@ -771,8 +779,9 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
   function metroPump() {
     if (!M.on || !M.ready) return;
     const now = ctx.currentTime;
-    if (M.next < now - 0.15) M.next = now + 0.03;   // il dispositivo si era fermato: si riparte da adesso
-    while (M.next < now + AHEAD) {
+    if (M.next < now - (P.bg && document.hidden ? 1.0 : 0.15)) M.next = now + 0.03;   // il dispositivo si era fermato: si riparte da adesso
+    const ahead = (P.bg && document.hidden) ? 1.5 : AHEAD;
+    while (M.next < now + ahead) {
       if (M.beat >= sg().n) M.beat = 0;
       if (M.beat === 0 && RS.on) rSchedule(M.next);
       clickAt(M.next, isAcc(M.beat));
@@ -801,6 +810,7 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
   function metroStart() {
     if (M.on || !AC) return;
     audio();
+    if (P.bg) setBg(true, false);
     M.on = true;
     M.ready = false;
     M.beat = 0;
@@ -1871,10 +1881,10 @@ summary.rowlbl { font-weight: 600; color: var(--ink); }
   rField('rFrom', 'rFrom', 20, 300); rField('rTo', 'rTo', 20, 300); rField('rStep', 'rStep', 1, 50); rField('rEvery', 'rEvery', 1, 600);
   $('bgMode').addEventListener('change', function (e) {
     P.bg = e.target.checked; saveP();
-    if (ctx) setBg(P.bg, true);
+    setBg(P.bg, true);
   });
   document.addEventListener('visibilitychange', function () {
-    if (!document.hidden && P.bg && ctx) { try { if (ctx.state !== 'running') ctx.resume(); const el = $('bgAudio'); if (el.paused) el.play().catch(function () {}); } catch (x) { /* ignora */ } }
+    if (P.bg && ctx) { try { if (ctx.state !== 'running') ctx.resume(); const el = $('bgAudio'); if (el.paused && (M.on || RS.on)) el.play().catch(function () {}); } catch (x) { /* ignora */ } }
   });
   rField('rN', 'n', 1, 99); rField('rBars', 'bars', 1, 16); rField('rLead', 'lead', 1, 8);
   bindField('rBpm', function (v) { const x = parseNum(v); if (!isFinite(x)) return false; setBpm(x); return true; });
